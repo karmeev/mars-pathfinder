@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Nasa.Dashboard.Model\Nasa.Dashboard.Model.csproj" />
+      <ProjectReference Include="..\Nasa.Dashboard.State\Nasa.Dashboard.State.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Autofac" Version="8.3.0" />
+    </ItemGroup>
+
+</Project>

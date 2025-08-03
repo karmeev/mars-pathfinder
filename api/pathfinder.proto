@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package pathfinder;
+
+option csharp_namespace = "Pathfinder.Proto";
+
+import "models.proto";
+import "google/protobuf/empty.proto";
+
+service PathfinderService {
+  rpc Move(stream pathfinder.models.MoveRequest) returns (stream pathfinder.models.MoveResponse);
+}

@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nasa.Dashboard", "Nasa.Dashboard\Nasa.Dashboard.csproj", "{87E5B9A8-2335-4AF2-BE18-0BD82489283C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nasa.Dashboard.Model", "Nasa.Dashboard.Model\Nasa.Dashboard.Model.csproj", "{5AEF93EB-D649-4294-A003-F8BEA024C836}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nasa.Dashboard.View", "Nasa.Dashboard.View\Nasa.Dashboard.View.csproj", "{35E906FD-A530-4C83-A65C-1676EC527DB4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nasa.Dashboard.State", "Nasa.Dashboard.State\Nasa.Dashboard.State.csproj", "{DB75F57B-A091-48AB-8B34-DB21BA57B27C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nasa.Dashboard.Store", "Nasa.Dashboard.Store\Nasa.Dashboard.Store.csproj", "{ACC235AF-2F9D-4156-A828-7FC1CD217076}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nasa.Dashboard.Reducers", "Nasa.Dashboard.Reducers\Nasa.Dashboard.Reducers.csproj", "{F5CB73D6-4833-49E5-99DA-24A7FF8E380C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{87E5B9A8-2335-4AF2-BE18-0BD82489283C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87E5B9A8-2335-4AF2-BE18-0BD82489283C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87E5B9A8-2335-4AF2-BE18-0BD82489283C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87E5B9A8-2335-4AF2-BE18-0BD82489283C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AEF93EB-D649-4294-A003-F8BEA024C836}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AEF93EB-D649-4294-A003-F8BEA024C836}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AEF93EB-D649-4294-A003-F8BEA024C836}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AEF93EB-D649-4294-A003-F8BEA024C836}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35E906FD-A530-4C83-A65C-1676EC527DB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35E906FD-A530-4C83-A65C-1676EC527DB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35E906FD-A530-4C83-A65C-1676EC527DB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35E906FD-A530-4C83-A65C-1676EC527DB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB75F57B-A091-48AB-8B34-DB21BA57B27C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB75F57B-A091-48AB-8B34-DB21BA57B27C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB75F57B-A091-48AB-8B34-DB21BA57B27C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB75F57B-A091-48AB-8B34-DB21BA57B27C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACC235AF-2F9D-4156-A828-7FC1CD217076}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACC235AF-2F9D-4156-A828-7FC1CD217076}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACC235AF-2F9D-4156-A828-7FC1CD217076}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACC235AF-2F9D-4156-A828-7FC1CD217076}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5CB73D6-4833-49E5-99DA-24A7FF8E380C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5CB73D6-4833-49E5-99DA-24A7FF8E380C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5CB73D6-4833-49E5-99DA-24A7FF8E380C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5CB73D6-4833-49E5-99DA-24A7FF8E380C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

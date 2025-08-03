@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package pathfinder.models;
+
+message MoveRequest {
+  string BotId = 1;
+  string Command = 2;
+}
+
+message MoveResponse {
+  string BotId = 1;
+  string Command = 2;
+  string SystemMessage = 3;
+}
