@@ -2,16 +2,27 @@ using Nasa.Dashboard.Model.Bots;
 using Nasa.Dashboard.State;
 using Nasa.Dashboard.Store.Contracts;
 using Nasa.Dashboard.View.Internal.Core;
-using Nasa.Dashboard.View.Internal.Views.Render;
+using Nasa.Dashboard.View.Internal.Views.Components.Bots;
+using Nasa.Dashboard.View.Internal.Views.Components.Common;
 using Spectre.Console;
 
 namespace Nasa.Dashboard.View.Internal.Views;
 
 internal class AcquireBotView(IViewFactory factory, IStore store) : IView
 {
+    private const string BackToMainMenu = "<-- Back to Main Menu";
+    
     public IView Render()
     {
         var state = store.CurrentState;
+        
+        if (state.IsLoading)
+        {
+            AnsiConsole.Clear();
+            AnsiConsole.MarkupLine("[bold underline yellow]Fetching bots...[/]");
+            Thread.Sleep(5);
+            return this;
+        }
         
         Header.RenderHeader(state);
         
@@ -34,58 +45,37 @@ internal class AcquireBotView(IViewFactory factory, IStore store) : IView
             return this;
         }
         
-        if (state.IsLoading)
-        {
-            AnsiConsole.MarkupLine("[bold underline yellow]Fetching bots...[/]");
-            Thread.Sleep(1000); // Optional: small delay for UX
-            return this;       // Re-render view until loading is done
-        }
-        
         if (!state.Bots.Any())
         {
             store.Dispatch(new LoadBotsAction());
             AnsiConsole.MarkupLine("[bold underline yellow]Fetching bots...[/]");
-            Thread.Sleep(1000); // Optional: small delay for UX
-            return this;       // Re-render view until loading is done
+            return this;
         }
         
-        var table = new Table();
-        table.AddColumn("Name");
-        table.AddColumn("Status");
+        BotsTable.RenderTable(state);
         
-        foreach (var bot in state.Bots)
-        {
-            var statusColor = bot.Status switch
-            {
-                BotStatus.Available => "green",
-                BotStatus.Acquired  => "yellow",
-                BotStatus.Dead      => "red",
-                _ => "grey"
-            };
-
-            table.AddRow(bot.Name, $"[{statusColor}]{bot.Status}[/]");
-        }
-        
-        AnsiConsole.Write(table);
-        
-        var availableBots = store.CurrentState.Bots
+        var choices = store.CurrentState.Bots
             .Where(b => b.Status == BotStatus.Available)
             .Select(b => b.Name)
             .ToList();
 
-        if (availableBots.Count == 0)
+        if (choices.Count == 0)
         {
             AnsiConsole.MarkupLine("[red]No bots available. Press any key to go back.[/]");
             Console.ReadKey();
             return factory.Create<MainMenuView>();
         }
 
-        var selectedName = AnsiConsole.Prompt(
+        choices.Add(BackToMainMenu);
+        var selected = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("Select a bot to [green]acquire[/]:")
-                .AddChoices(availableBots));
+                .AddChoices(choices));
         
-        var botId = state.Bots.First(b => b.Name == selectedName).Id;
+        if (selected is BackToMainMenu)
+            return factory.Create<MainMenuView>();
+        
+        var botId = state.Bots.First(b => b.Name == selected).Id;
         store.Dispatch(new SelectBotAction(botId));
         return this;
     }

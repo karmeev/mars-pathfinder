@@ -12,4 +12,12 @@
       <ProjectReference Include="..\Nasa.Dashboard.Store\Nasa.Dashboard.Store.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Autofac" Version="8.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Internal\" />
+    </ItemGroup>
+
 </Project>

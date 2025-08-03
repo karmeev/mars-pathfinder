@@ -8,6 +8,8 @@ internal class ViewNavigator(ILifetimeScope scope) : IViewNavigator
 {
     public void Run()
     {
+        Console.Clear();
+        
         IView? currentView = scope.Resolve<MainMenuView>();
 
         while (currentView != null)

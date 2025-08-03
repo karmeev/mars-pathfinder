@@ -1,6 +1,6 @@
 using Nasa.Dashboard.Store.Contracts;
 using Nasa.Dashboard.View.Internal.Core;
-using Nasa.Dashboard.View.Internal.Views.Render;
+using Nasa.Dashboard.View.Internal.Views.Components.Common;
 using Spectre.Console;
 
 namespace Nasa.Dashboard.View.Internal.Views;
@@ -19,7 +19,7 @@ internal class MainMenuView(IViewFactory factory, IStore store) : IView
         return choice switch
         {
             "Acquire bot" => factory.Create<AcquireBotView>(),
-            "Start driving" => null,
+            "Start driving" => factory.Create<DrivingView>(),
             "Exit" => null,
             _ => this
         };

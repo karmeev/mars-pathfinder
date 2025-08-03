@@ -2,7 +2,7 @@ using Nasa.Dashboard.Model.Bots;
 using Nasa.Dashboard.State;
 using Spectre.Console;
 
-namespace Nasa.Dashboard.View.Internal.Views.Render;
+namespace Nasa.Dashboard.View.Internal.Views.Components.Common;
 
 internal static class Header
 {
@@ -23,12 +23,11 @@ internal static class Header
             };
 
             AnsiConsole.MarkupLine($"[grey]Selected Bot:[/] [bold {statusColor}]{state.SelectedBot.Name} ({state.SelectedBot.Status})[/]");
-            AnsiConsole.WriteLine();
         }
         else
         {
             AnsiConsole.MarkupLine($"[grey]Selected Bot:[/] Not selected");
-            AnsiConsole.WriteLine();
         }
+        AnsiConsole.WriteLine();
     }
 }

@@ -1,9 +1,9 @@
 using Nasa.Dashboard.Model;
 using Nasa.Dashboard.State;
 
-namespace Nasa.Dashboard.Reducers.Bots;
+namespace Nasa.Dashboard.Reducers.Internal.Bots;
 
-public static class BotsReducer
+internal static class BotsReducer
 {
     public static AppState Reduce(AppState state, IAction action)
     {

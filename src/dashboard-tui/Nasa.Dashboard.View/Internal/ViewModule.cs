@@ -13,5 +13,6 @@ internal class ViewModule : Module
         builder.RegisterType<ViewFactory>().As<IViewFactory>().SingleInstance();
         builder.RegisterType<MainMenuView>();
         builder.RegisterType<AcquireBotView>();
+        builder.RegisterType<DrivingView>();
     }
 }
