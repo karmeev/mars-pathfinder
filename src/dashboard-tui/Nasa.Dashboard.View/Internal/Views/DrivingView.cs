@@ -13,6 +13,7 @@ internal class DrivingView(IViewFactory factory, IStore store) : IView
     public IView Render()
     {
         var state = store.CurrentState;
+        var panelState = state.ControlPanelState;
         
         Header.RenderHeader(state);
         

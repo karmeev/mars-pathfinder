@@ -1,4 +1,5 @@
 using Nasa.Dashboard.State.Actions;
+using Nasa.Dashboard.State.Actions.ControlPanel;
 using Nasa.Dashboard.Store.Contracts;
 
 namespace Nasa.Dashboard.Reducers.Internal.ControlPanel;
@@ -7,6 +8,37 @@ internal class ControlPanelMiddleware(IDispatcher dispatcher, IControlPanelServi
 {
     public async Task HandleAsync(IAction action)
     {
-        await Task.CompletedTask;
+        switch (action)
+        {
+            case StreamingAction:
+                //_ = StartStreamingAsync(); // fire-and-forget
+                break;
+
+            case SendOperatorMessageAction send:
+                //await service.SendAsync(send.Message);
+                dispatcher.Dispatch(new SendOperatorMessageActionResult(send.Message));
+                break;
+
+            case BotMessageReceivedAction received:
+                dispatcher.Dispatch(new BotMessageReceivedActionResult(received.Message));
+                break;
+        }
+    }
+    
+    private async Task StartStreamingAsync()
+    {
+        try
+        {
+            // await foreach (var message in service.ReadAsync())
+            // {
+            //     dispatcher.Dispatch(new BotMessageReceivedAction(message));
+            // }
+
+            dispatcher.Dispatch(new StreamingActionResult());
+        }
+        catch (Exception ex)
+        {
+            dispatcher.Dispatch(new StreamingErrorAction(ex));
+        }
     }
 }

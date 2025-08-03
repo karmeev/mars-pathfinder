@@ -4,5 +4,7 @@ namespace Nasa.Dashboard.State.States;
 
 public record ControlPanelState
 {
-    public IEnumerable<IMessage> Messages { get; init; }
+    public bool IsStreaming { get; init; }
+    public Exception? StreamingError { get; init; }
+    public IEnumerable<IMessage> Messages { get; init; } = [];
 }
