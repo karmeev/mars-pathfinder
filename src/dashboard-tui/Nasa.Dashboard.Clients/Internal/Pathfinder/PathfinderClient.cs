@@ -17,6 +17,11 @@ internal class PathfinderClient(PathfinderService.PathfinderServiceClient grpcSe
         return response.IsSuccessful;
     }
 
+    public async Task DisconnectAsync()
+    {
+        await grpcService.DisconnectAsync(new Empty(), GetHeader());
+    }
+
     public async Task<IEnumerable<Bot>> GetBotsAsync()
     {
         var response = await grpcService.GetBotsAsync(new Empty(), GetHeader());

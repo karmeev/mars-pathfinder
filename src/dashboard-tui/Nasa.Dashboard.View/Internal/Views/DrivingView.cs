@@ -1,4 +1,5 @@
 using Nasa.Dashboard.Model.Messages;
+using Nasa.Dashboard.State.Actions.System;
 using Nasa.Dashboard.Store.Contracts;
 using Nasa.Dashboard.View.Internal.Core;
 using Nasa.Dashboard.View.Internal.Views.Components.Common;
@@ -21,7 +22,7 @@ internal class DrivingView(IViewFactory factory, IStore store) : IView
         
         var panelState = state.ControlPanelState;
         
-        Header.RenderHeader(state);
+        Header.RenderHeader(state, (() => store.Dispatch(new PingAction())));
         
         if (state.BotState.SelectedBot is null)
         {

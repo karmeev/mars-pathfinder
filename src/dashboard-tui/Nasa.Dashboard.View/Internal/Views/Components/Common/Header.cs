@@ -6,8 +6,13 @@ namespace Nasa.Dashboard.View.Internal.Views.Components.Common;
 
 internal static class Header
 {
-    public static void RenderHeader(AppState state)
+    public static void RenderHeader(AppState state, Action? pingAction = null)
     {
+        if (pingAction is not null)
+        {
+            pingAction();
+        }
+        
         AnsiConsole.Clear();
 
         AnsiConsole.Write(new FigletText("Nasa Space Program").Centered().Color(Color.Aqua));

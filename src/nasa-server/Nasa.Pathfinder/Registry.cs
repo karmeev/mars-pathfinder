@@ -1,4 +1,6 @@
 using Autofac;
+using Nasa.Pathfinder.Tmp;
+using Pathfinder.Messages;
 
 namespace Nasa.Pathfinder;
 
@@ -15,5 +17,13 @@ public static class Registry
         Services.Registry.Register(builder);
         Data.Registry.Register(builder);
         Infrastructure.Registry.Register(builder);
+
+        var str = new BotStorage();
+        str.Bots = new()
+        {
+            new Bot { Id = "bot-123", Name = "TestBot", Status = "Available"},
+            new Bot { Id = "bot-1233", Name = "TestBot2", Status = "Available"},
+        };
+        builder.RegisterInstance(str).As<BotStorage>().SingleInstance();
     }
 }

@@ -1,5 +1,6 @@
 using Nasa.Dashboard.Model.Bots;
 using Nasa.Dashboard.State.Actions.Bots;
+using Nasa.Dashboard.State.Actions.System;
 using Nasa.Dashboard.Store.Contracts;
 using Nasa.Dashboard.View.Internal.Core;
 using Nasa.Dashboard.View.Internal.Views.Components.Bots;
@@ -29,7 +30,7 @@ internal class AcquireBotView(IViewFactory factory, IStore store) : IView
             return this;
         }
         
-        Header.RenderHeader(state);
+        Header.RenderHeader(state, (() => store.Dispatch(new PingAction())));
         
         if (state.BotState.SelectedBot is not null)
         {
