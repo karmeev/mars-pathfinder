@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Nasa.Dashboard.Clients\Nasa.Dashboard.Clients.csproj" />
       <ProjectReference Include="..\Nasa.Dashboard.Reducers\Nasa.Dashboard.Reducers.csproj" />
       <ProjectReference Include="..\Nasa.Dashboard.View\Nasa.Dashboard.View.csproj" />
     </ItemGroup>

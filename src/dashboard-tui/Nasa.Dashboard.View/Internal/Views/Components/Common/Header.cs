@@ -12,6 +12,15 @@ internal static class Header
 
         AnsiConsole.Write(new FigletText("Nasa Space Program").Centered().Color(Color.Aqua));
 
+        if (state.IsConnected)
+        {
+            AnsiConsole.MarkupLine($"[grey]Connection status:[/] [bold green]Connected[/]");
+        }
+        else
+        {
+            AnsiConsole.MarkupLine($"[grey]Connection status:[/] [bold red]Disconnected[/]");
+        }
+        
         if (state.BotState.SelectedBot is not null)
         {
             var statusColor = state.BotState.SelectedBot.Status switch

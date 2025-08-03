@@ -13,6 +13,12 @@ internal class DrivingView(IViewFactory factory, IStore store) : IView
     public IView Render()
     {
         var state = store.CurrentState;
+        
+        if (!store.CurrentState.IsConnected)
+        {
+            return factory.Create<MainMenuView>();
+        }
+        
         var panelState = state.ControlPanelState;
         
         Header.RenderHeader(state);
@@ -30,7 +36,7 @@ internal class DrivingView(IViewFactory factory, IStore store) : IView
         }
         
         AnsiConsole.MarkupLine("[underline]Chat:[/]");
-        foreach (var msg in state.ControlPanelState.Messages.TakeLast(10))
+        foreach (var msg in panelState.Messages.TakeLast(10))
         {
             var prefix = msg.GetType() == typeof(OperatorMessage) ? "[green]You:[/]" : "[yellow]Bot:[/]";
             AnsiConsole.MarkupLine($"{prefix} {msg.Text}");

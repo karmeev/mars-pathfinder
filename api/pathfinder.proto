@@ -4,9 +4,13 @@ package pathfinder;
 
 option csharp_namespace = "Pathfinder.Proto";
 
-import "models.proto";
+import "messages.proto";
 import "google/protobuf/empty.proto";
 
 service PathfinderService {
-  rpc Move(stream pathfinder.models.MoveRequest) returns (stream pathfinder.models.MoveResponse);
+  rpc Ping(google.protobuf.Empty) returns(pathfinder.messages.PingResponse);
+  rpc GetBots(google.protobuf.Empty) returns(pathfinder.messages.GetBotsResponse);
+  rpc SelectBot(pathfinder.messages.SelectBotRequest) returns(pathfinder.messages.SelectBotResponse);
+  rpc ResetBot(pathfinder.messages.ResetBotRequest) returns(pathfinder.messages.ResetBotResponse);
+  rpc Move(stream pathfinder.messages.MoveRequest) returns (stream pathfinder.messages.MoveResponse);
 }

@@ -8,5 +8,6 @@ public static class Registry
     {
         Nasa.Dashboard.Reducers.Registry.RegisterStore(builder);
         Nasa.Dashboard.View.Registry.RegisterViews(builder);
+        Nasa.Dashboard.Clients.Registry.Register(builder);
     }
 }

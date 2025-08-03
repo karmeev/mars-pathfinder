@@ -11,11 +11,11 @@ internal class ControlPanelMiddleware(IDispatcher dispatcher, IControlPanelServi
         switch (action)
         {
             case StreamingAction:
-                //_ = StartStreamingAsync(); // fire-and-forget
+                _ = StartStreamingAsync();
                 break;
 
             case SendOperatorMessageAction send:
-                //await service.SendAsync(send.Message);
+                await service.SendMessageAsync(send.Message);
                 dispatcher.Dispatch(new SendOperatorMessageActionResult(send.Message));
                 break;
 
@@ -29,10 +29,10 @@ internal class ControlPanelMiddleware(IDispatcher dispatcher, IControlPanelServi
     {
         try
         {
-            // await foreach (var message in service.ReadAsync())
-            // {
-            //     dispatcher.Dispatch(new BotMessageReceivedAction(message));
-            // }
+            await foreach (var message in service.ReceiveMessagesAsync())
+            {
+                dispatcher.Dispatch(new BotMessageReceivedAction(message));
+            }
 
             dispatcher.Dispatch(new StreamingActionResult());
         }

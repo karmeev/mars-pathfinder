@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package pathfinder.messages;
+
+message PingResponse {
+  bool IsSuccessful = 1;
+}
+
+message GetBotsResponse {
+  repeated Bot Bots = 1;
+}
+
+message SelectBotRequest {
+  string BotId = 1;
+}
+
+message SelectBotResponse {
+  Bot Bot = 1;
+}
+
+message ResetBotRequest {
+  string BotId = 1;
+}
+
+message ResetBotResponse {
+  Bot Bot = 1;
+}
+
+message MoveRequest {
+  string BotId = 1;
+  string Command = 2;
+}
+
+message MoveResponse {
+  string BotId = 1;
+  string Command = 2;
+  string SystemMessage = 3;
+}
+
+message Bot {
+  string Id = 1;
+  string Name = 2;
+  string Status = 3;
+}

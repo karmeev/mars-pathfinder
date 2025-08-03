@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Autofac;
 using Nasa.Dashboard.View.Contracts;
 
@@ -14,6 +15,10 @@ internal class NasaApp
 
     public void Run()
     {
+        var activity = new Activity($"Operator - {Guid.NewGuid()}");
+        activity.Start();
+        Activity.Current = activity;
+        
         if (_navigator == null)
         {
             throw new Exception("ViewNavigator not initialized");

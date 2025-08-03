@@ -1,3 +1,4 @@
+using Nasa.Dashboard.Clients.Contracts;
 using Nasa.Dashboard.Model.Bots;
 
 namespace Nasa.Dashboard.Reducers.Internal.Bots;
@@ -9,36 +10,23 @@ internal interface IBotsService
     Task<bool> ResetBotAsync(Bot bot);
 }
 
-internal class BotsService : IBotsService
+internal class BotsService(IPathfinderClient client) : IBotsService
 {
     public async Task<IEnumerable<Bot>> GetBotsAsync()
     {
-        await Task.Delay(1000);
-        return new List<Bot>
-        {
-            new Bot()
-            {
-                Id = "1",
-                Name = "Bot1",
-                Status = BotStatus.Available
-            }
-        };
+        var response = await client.GetBotsAsync();
+        return response;
     }
 
     public async Task<Bot> SelectBotAsync(string id)
     {
-        await Task.CompletedTask;
-        return new Bot()
-        {
-            Id = "1",
-            Name = "Bot1",
-            Status = BotStatus.Available
-        };
+        var response = await client.SelectBotAsync(id);
+        return response;
     }
 
     public async Task<bool> ResetBotAsync(Bot bot)
     {
-        await Task.CompletedTask;
-        return true;
+        var response = await client.ResetBotAsync(bot.Id);
+        return response;
     }
 }

@@ -1,5 +1,4 @@
 using Nasa.Dashboard.Model.Bots;
-using Nasa.Dashboard.State.Actions;
 using Nasa.Dashboard.State.Actions.Bots;
 using Nasa.Dashboard.Store.Contracts;
 using Nasa.Dashboard.View.Internal.Core;
@@ -16,6 +15,11 @@ internal class AcquireBotView(IViewFactory factory, IStore store) : IView
     public IView Render()
     {
         var state = store.CurrentState;
+        
+        if (!store.CurrentState.IsConnected)
+        {
+            return factory.Create<MainMenuView>();
+        }
         
         if (state.BotState.IsLoading)
         {
