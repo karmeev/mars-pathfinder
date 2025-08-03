@@ -12,5 +12,5 @@ service PathfinderService {
   rpc GetBots(google.protobuf.Empty) returns(pathfinder.messages.GetBotsResponse);
   rpc SelectBot(pathfinder.messages.SelectBotRequest) returns(pathfinder.messages.SelectBotResponse);
   rpc ResetBot(pathfinder.messages.ResetBotRequest) returns(pathfinder.messages.ResetBotResponse);
-  rpc Move(stream pathfinder.messages.MoveRequest) returns (stream pathfinder.messages.MoveResponse);
+  rpc SendMessage(stream pathfinder.messages.SendMessageRequest) returns (stream pathfinder.messages.SendMessageResponse);
 }

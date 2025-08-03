@@ -26,15 +26,15 @@ message ResetBotResponse {
   Bot Bot = 1;
 }
 
-message MoveRequest {
+message SendMessageRequest {
   string BotId = 1;
-  string Command = 2;
+  string Message = 2;
 }
 
-message MoveResponse {
+message SendMessageResponse {
   string BotId = 1;
-  string Command = 2;
-  string SystemMessage = 3;
+  string Message = 2;
+  bool IsLost = 3;
 }
 
 message Bot {

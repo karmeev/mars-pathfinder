@@ -19,6 +19,6 @@ internal class ClientsModule : Module
             return new PathfinderService.PathfinderServiceClient(chan);
         }).AsSelf().SingleInstance();
         
-        builder.RegisterType<PathfinderClient>().As<IPathfinderClient>();
+        builder.RegisterType<PathfinderClient>().As<IPathfinderClient>().SingleInstance();
     }
 }

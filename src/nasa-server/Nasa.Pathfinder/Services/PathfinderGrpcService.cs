@@ -66,12 +66,37 @@ public class PathfinderGrpcService(BotStorage storage) : PathfinderService.Pathf
         return response;
     }
 
-    public override async Task Move(IAsyncStreamReader<MoveRequest> requestStream, 
-        IServerStreamWriter<MoveResponse> responseStream, ServerCallContext context)
+    public override async Task SendMessage(IAsyncStreamReader<SendMessageRequest> requestStream, 
+        IServerStreamWriter<SendMessageResponse> responseStream, ServerCallContext context)
     {
-        await foreach (var message in requestStream.ReadAllAsync())
+        var headers = context.RequestHeaders;
+        var traceId = headers.GetValue("traceId") ?? Guid.NewGuid().ToString();
+        
+        try
         {
-            Console.WriteLine($"[{Activity.Current?.TraceId}] received message from client; botId: {message.BotId}");
+            await foreach (var message in requestStream.ReadAllAsync())
+            {
+                Console.WriteLine($"[{Activity.Current?.TraceId}] received message from client; botId: {message.BotId}");
+                
+                await NotifyClient(message, responseStream);
+            }
+        }
+        catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
+        {
+            Console.WriteLine($"Client {traceId} disconnected intentionally.");
+        }
+        catch (IOException ex)
+        {
+            Console.WriteLine($"[WARN] Client {traceId} stream aborted: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERROR] Client {traceId} error: {ex}");
+        }
+        finally
+        {
+            Console.WriteLine($"Client {traceId} cleanup done.");
+            // Remove from client registry if needed
         }
     }
 
@@ -86,5 +111,17 @@ public class PathfinderGrpcService(BotStorage storage) : PathfinderService.Pathf
         };
         
         await context.WriteResponseHeadersAsync(responseHeaders);
+    }
+
+    private async Task NotifyClient(SendMessageRequest message, IServerStreamWriter<SendMessageResponse> responseStream)
+    {
+        var reply = new SendMessageResponse
+        {
+            BotId = message.BotId,
+            Message = $"Received message from Bot {message.BotId}",
+            IsLost = false
+        };
+
+        await responseStream.WriteAsync(reply);
     }
 }

@@ -1,5 +1,6 @@
 using Nasa.Dashboard.State.Actions;
 using Nasa.Dashboard.State.Actions.Bots;
+using Nasa.Dashboard.State.Actions.ControlPanel;
 using Nasa.Dashboard.Store.Contracts;
 
 namespace Nasa.Dashboard.Reducers.Internal.Bots;
@@ -22,6 +23,7 @@ internal class BotsMiddleware(IDispatcher dispatcher, IBotsService service)
                 //TODO: if resetting is not successful what's next?
                 await service.ResetBotAsync(resetSelectedBotAction.Bot);
                 dispatcher.Dispatch(new ResetSelectedBotActionResult(resetSelectedBotAction.Bot));
+                dispatcher.Dispatch(new CleanMessages());
                 break;
         }
     }

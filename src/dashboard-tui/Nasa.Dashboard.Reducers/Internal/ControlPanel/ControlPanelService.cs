@@ -1,22 +1,38 @@
+using Nasa.Dashboard.Clients.Contracts;
+using Nasa.Dashboard.Model.Bots;
 using Nasa.Dashboard.Model.Messages;
 
 namespace Nasa.Dashboard.Reducers.Internal.ControlPanel;
 
 internal interface IControlPanelService
 {
-    Task SendMessageAsync(IMessage message);
-    IAsyncEnumerable<IMessage> ReceiveMessagesAsync();
+    Task SendMessageAsync(IMessage message, Bot bot);
+    IAsyncEnumerable<IMessage> ReceiveMessagesAsync(CancellationToken ct = default);
+    Task ExitFromPanel();
 }
 
-internal class ControlPanelService : IControlPanelService
+internal class ControlPanelService(IPathfinderClient client) : IControlPanelService
 {
-    public Task SendMessageAsync(IMessage message)
+    public async Task SendMessageAsync(IMessage message, Bot bot)
     {
-        throw new NotImplementedException();
+        await client.SendMessageAsync(bot.Id, message.Text);
     }
 
-    public IAsyncEnumerable<IMessage> ReceiveMessagesAsync()
+    public async Task ExitFromPanel()
     {
-        throw new NotImplementedException();
+        await client.StopAsync();
+    }
+
+    public async IAsyncEnumerable<IMessage> ReceiveMessagesAsync(CancellationToken ct = default)
+    {
+        if (!client.IsAlreadyInChat())
+        {
+            client.StartChat();
+        }
+        
+        await foreach (var message in client.GetIncomingMessagesAsync(ct))
+        {
+            yield return message;
+        }
     }
 }

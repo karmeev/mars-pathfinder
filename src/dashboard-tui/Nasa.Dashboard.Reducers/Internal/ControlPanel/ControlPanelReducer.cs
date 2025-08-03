@@ -20,44 +20,68 @@ internal static class ControlPanelReducer
                     StreamingError = null
                 }
             },
-
-            StreamingActionResult => state with
+            StreamingActionResult streamingActionResult => state with
             {
-                ControlPanelState = controlPanel with { IsStreaming = false }
+                ControlPanelState = controlPanel with
+                {
+                    IsStreaming = streamingActionResult.IsStreaming,
+                }
             },
-
-            StreamingErrorAction error => state with
+            StreamingErrorAction streamingErrorAction => state with
             {
                 ControlPanelState = controlPanel with
                 {
                     IsStreaming = false,
-                    StreamingError = error.Exception
-                }
-            },
-
-            BotMessageReceivedAction => state,
-            BotMessageReceivedActionResult msg => state with
-            {
-                ControlPanelState = controlPanel with
-                {
-                    Messages = controlPanel.Messages.Append(msg.Message)
-                }
-            },
-
-            BotMessageErrorReceivedActionResult msg => state with
-            {
-                ControlPanelState = controlPanel with
-                {
-                    Messages = controlPanel.Messages.Append(msg.Message)
+                    StreamingError = streamingErrorAction.Exception
                 }
             },
             
-            SendOperatorMessageAction => state,
-            SendOperatorMessageActionResult msg => state with
+            BotMessageReceivedActionResult botMessageReceivedActionResult => state with
             {
                 ControlPanelState = controlPanel with
                 {
-                    Messages = controlPanel.Messages.Append(msg.Message)
+                    IsWaiting = false,
+                    Messages = controlPanel.Messages
+                        .Append(botMessageReceivedActionResult.Message)
+                        .ToList()
+                }
+            },
+            BotMessageErrorReceivedActionResult errorReceivedActionResult => state with
+            {
+                ControlPanelState = controlPanel with
+                {
+                    Messages = controlPanel.Messages
+                        .Append(errorReceivedActionResult.Message)
+                        .ToList()
+                }
+            },
+            
+            SendOperatorMessageAction sendOperatorMessageAction => state with
+            {
+                ControlPanelState = controlPanel with
+                {
+                    IsWaiting = true,
+                    Messages = controlPanel.Messages
+                        .Append(sendOperatorMessageAction.Message)
+                        .ToList()
+                }
+            },
+            SendOperatorMessageActionResult => state,
+            
+            ExitControlPanelAction => state with
+            {
+                ControlPanelState = controlPanel with
+                {
+                    IsStreaming = false
+                }
+            },
+            
+            CleanMessages => state with
+            {
+                ControlPanelState = controlPanel with
+                {
+                    IsStreaming = false,
+                    Messages = []
                 }
             },
             _ => state
