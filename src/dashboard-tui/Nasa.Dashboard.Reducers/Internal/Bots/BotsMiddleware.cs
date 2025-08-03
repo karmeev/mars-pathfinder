@@ -1,5 +1,5 @@
-using Nasa.Dashboard.State;
-using Nasa.Dashboard.Store;
+using Nasa.Dashboard.State.Actions;
+using Nasa.Dashboard.Store.Contracts;
 
 namespace Nasa.Dashboard.Reducers.Internal.Bots;
 

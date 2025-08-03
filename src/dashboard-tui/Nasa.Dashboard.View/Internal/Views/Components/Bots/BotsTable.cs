@@ -12,7 +12,7 @@ internal static class BotsTable
         table.AddColumn("Name");
         table.AddColumn("Status");
         
-        foreach (var bot in state.Bots)
+        foreach (var bot in state.BotState.Bots)
         {
             var statusColor = bot.Status switch
             {

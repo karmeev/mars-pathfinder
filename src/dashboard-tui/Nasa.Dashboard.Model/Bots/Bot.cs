@@ -1,6 +1,4 @@
-using Nasa.Dashboard.Model.Bots;
-
-namespace Nasa.Dashboard.Model;
+namespace Nasa.Dashboard.Model.Bots;
 
 public class Bot
 {

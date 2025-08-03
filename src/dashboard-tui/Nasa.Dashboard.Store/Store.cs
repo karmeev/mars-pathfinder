@@ -1,14 +1,10 @@
 using Nasa.Dashboard.State;
+using Nasa.Dashboard.State.Actions;
 using Nasa.Dashboard.Store.Contracts;
 
 namespace Nasa.Dashboard.Store;
 
-public interface IDispatcher
-{
-    void Dispatch(IAction action);
-}
-
-public class Store(AppState initialState) : IDispatcher, IStore
+public class Store(AppState initialState) : IStore
 {
     private AppState _state = initialState;
     private readonly List<Func<AppState, IAction, AppState>> _reducers = new();

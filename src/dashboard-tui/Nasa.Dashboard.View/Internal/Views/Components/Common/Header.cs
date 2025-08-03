@@ -12,9 +12,9 @@ internal static class Header
 
         AnsiConsole.Write(new FigletText("Nasa Space Program").Centered().Color(Color.Aqua));
 
-        if (state.SelectedBot is not null)
+        if (state.BotState.SelectedBot is not null)
         {
-            var statusColor = state.SelectedBot.Status switch
+            var statusColor = state.BotState.SelectedBot.Status switch
             {
                 BotStatus.Available => "green",
                 BotStatus.Acquired  => "yellow",
@@ -22,7 +22,8 @@ internal static class Header
                 _ => "grey"
             };
 
-            AnsiConsole.MarkupLine($"[grey]Selected Bot:[/] [bold {statusColor}]{state.SelectedBot.Name} ({state.SelectedBot.Status})[/]");
+            AnsiConsole.MarkupLine($"[grey]Selected Bot:[/] [bold {statusColor}]{state.BotState.SelectedBot.Name} " +
+                                   $"({state.BotState.SelectedBot.Status})[/]");
         }
         else
         {

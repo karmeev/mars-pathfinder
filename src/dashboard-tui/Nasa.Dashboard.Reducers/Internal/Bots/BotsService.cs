@@ -1,4 +1,3 @@
-using Nasa.Dashboard.Model;
 using Nasa.Dashboard.Model.Bots;
 
 namespace Nasa.Dashboard.Reducers.Internal.Bots;
