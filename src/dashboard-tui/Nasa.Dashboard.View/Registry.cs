@@ -2,6 +2,7 @@ using Autofac;
 using Nasa.Dashboard.View.Contracts;
 using Nasa.Dashboard.View.Internal;
 using Nasa.Dashboard.View.Internal.Views;
+using Nasa.Dashboard.View.Internal.Views.Engine;
 
 namespace Nasa.Dashboard.View;
 

@@ -1,7 +1,7 @@
 using Autofac;
 using Nasa.Dashboard.View.Internal.Core;
 
-namespace Nasa.Dashboard.View.Internal.Views;
+namespace Nasa.Dashboard.View.Internal.Views.Engine;
 
 internal class ViewFactory(ILifetimeScope scope) : IViewFactory
 {

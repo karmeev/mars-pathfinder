@@ -1,5 +1,6 @@
 using Nasa.Dashboard.Store.Contracts;
 using Nasa.Dashboard.View.Internal.Core;
+using Nasa.Dashboard.View.Internal.Views.Components.Common;
 using Spectre.Console;
 
 namespace Nasa.Dashboard.View.Internal.Views;
@@ -11,13 +12,16 @@ internal class DrivingView(IViewFactory factory, IStore store) : IView
     public IView Render()
     {
         var state = store.CurrentState;
+        
+        Header.RenderHeader(state);
+        
         if (state.SelectedBot is null)
         {
-            AnsiConsole.MarkupLine("Bot is [red]not[/] selected!");
-            
             var selected = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                    .AddChoices(BackToMainMenu));
+                    .Title("Bot is [red]not[/] selected!")
+                    .AddChoices(new[] { BackToMainMenu })
+            );
             
             if (selected is BackToMainMenu)
                 return factory.Create<MainMenuView>();

@@ -2,7 +2,7 @@ using Autofac;
 using Nasa.Dashboard.View.Contracts;
 using Nasa.Dashboard.View.Internal.Core;
 
-namespace Nasa.Dashboard.View.Internal.Views;
+namespace Nasa.Dashboard.View.Internal.Views.Engine;
 
 internal class ViewNavigator(ILifetimeScope scope) : IViewNavigator
 {
