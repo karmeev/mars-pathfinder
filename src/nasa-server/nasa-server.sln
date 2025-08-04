@@ -16,6 +16,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D22BFA17
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nasa.Pathfinder.Facades.Tests", "tests\Nasa.Pathfinder.Facades.Tests\Nasa.Pathfinder.Facades.Tests.csproj", "{FD0F4E52-A493-4B45-9348-95DA6CDF1725}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nasa.Pathfinder.Facades", "src\Nasa.Pathfinder.Facades\Nasa.Pathfinder.Facades.csproj", "{48BBB089-BFA5-4A3E-8EE9-1C2A0CBF87AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nasa.Pathfinder.Data.Contracts", "src\Nasa.Pathfinder.Data.Contracts\Nasa.Pathfinder.Data.Contracts.csproj", "{E7216774-DEDF-4F9A-8142-613419C1DA3C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nasa.Pathfinder.Tests", "tests\Nasa.Pathfinder.Tests\Nasa.Pathfinder.Tests.csproj", "{9F16D2F2-D9F1-46B9-B539-A0708480FF73}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,8 +56,21 @@ Global
 		{FD0F4E52-A493-4B45-9348-95DA6CDF1725}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD0F4E52-A493-4B45-9348-95DA6CDF1725}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD0F4E52-A493-4B45-9348-95DA6CDF1725}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48BBB089-BFA5-4A3E-8EE9-1C2A0CBF87AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48BBB089-BFA5-4A3E-8EE9-1C2A0CBF87AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48BBB089-BFA5-4A3E-8EE9-1C2A0CBF87AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48BBB089-BFA5-4A3E-8EE9-1C2A0CBF87AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7216774-DEDF-4F9A-8142-613419C1DA3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7216774-DEDF-4F9A-8142-613419C1DA3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7216774-DEDF-4F9A-8142-613419C1DA3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7216774-DEDF-4F9A-8142-613419C1DA3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F16D2F2-D9F1-46B9-B539-A0708480FF73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F16D2F2-D9F1-46B9-B539-A0708480FF73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F16D2F2-D9F1-46B9-B539-A0708480FF73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F16D2F2-D9F1-46B9-B539-A0708480FF73}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FD0F4E52-A493-4B45-9348-95DA6CDF1725} = {D22BFA17-E54D-407A-99D7-AFE6941632ED}
+		{9F16D2F2-D9F1-46B9-B539-A0708480FF73} = {D22BFA17-E54D-407A-99D7-AFE6941632ED}
 	EndGlobalSection
 EndGlobal

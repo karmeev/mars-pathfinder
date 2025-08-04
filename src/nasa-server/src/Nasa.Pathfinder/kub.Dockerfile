@@ -13,9 +13,11 @@ COPY ["api/messages.proto", "messages.proto"]
 
 WORKDIR /src
 COPY ["src/nasa-server/src/Nasa.Pathfinder/", "nasa-server/src/Nasa.Pathfinder/"]
+COPY ["src/nasa-server/src/Nasa.Pathfinder.Facades/", "nasa-server/src/Nasa.Pathfinder.Facades/"]
+COPY ["src/nasa-server/src/Nasa.Pathfinder.Facades.Contracts/", "nasa-server/src/Nasa.Pathfinder.Facades.Contracts/"]
 COPY ["src/nasa-server/src/Nasa.Pathfinder.Domain/", "nasa-server/src/Nasa.Pathfinder.Domain/"]
 COPY ["src/nasa-server/src/Nasa.Pathfinder.Data/", "nasa-server/src/Nasa.Pathfinder.Data/"]
-COPY ["src/nasa-server/src/Nasa.Pathfinder.Facades.Contracts/", "nasa-server/src/Nasa.Pathfinder.Facades.Contracts/"]
+COPY ["src/nasa-server/src/Nasa.Pathfinder.Data.Contracts/", "nasa-server/src/Nasa.Pathfinder.Data.Contracts/"]
 COPY ["src/nasa-server/src/Nasa.Pathfinder.Infrastructure/", "nasa-server/src/Nasa.Pathfinder.Infrastructure/"]
 COPY ["src/nasa-server/src/Nasa.Pathfinder.Services/", "nasa-server/src/Nasa.Pathfinder.Services/"]
 

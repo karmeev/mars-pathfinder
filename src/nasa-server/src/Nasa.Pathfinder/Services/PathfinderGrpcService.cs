@@ -1,8 +1,8 @@
-using System.Diagnostics;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Nasa.Pathfinder.Domain.Messages;
 using Nasa.Pathfinder.Facades.Contracts;
+using Nasa.Pathfinder.Facades.Contracts.Exceptions;
 using Nasa.Pathfinder.Tmp;
 using Pathfinder.Messages;
 using Pathfinder.Proto;
@@ -10,9 +10,10 @@ using Pathfinder.Proto;
 namespace Nasa.Pathfinder.Services;
 
 public class PathfinderGrpcService(
-    BotStorage storage, 
+    BotStorage storage,
+    ILogger<PathfinderGrpcService> logger,
     IBotFacade botFacade, 
-    IMessageFacade messageFacade) : PathfinderService.PathfinderServiceBase
+    IMessageFacade messageFacade) : GrpcService
 {
     //private static readonly ConcurrentDictionary<string, IServerStreamWriter<MoveResponse>> ClientStreams = new();
 
@@ -36,7 +37,14 @@ public class PathfinderGrpcService(
 
     public override async Task<SelectBotResponse> SelectBot(SelectBotRequest request, ServerCallContext context)
     {
-        var result = await botFacade.SelectBotAsync(request.BotId, context.CancellationToken);
+        try
+        {
+            var result = await botFacade.SelectBotAsync(request.BotId, context.CancellationToken);
+        }
+        catch (BotAlreadyAcquiredException e)
+        {
+            return BadRequest<SelectBotResponse>("Bot already acquired");
+        }
         
         var bot = storage.Bots.FirstOrDefault(x => x.Id == request.BotId);
         
@@ -59,7 +67,14 @@ public class PathfinderGrpcService(
 
     public override async Task<ResetBotResponse> ResetBot(ResetBotRequest request, ServerCallContext context)
     {
-        var result = await botFacade.ResetBotAsync(request.BotId, context.CancellationToken);
+        try
+        {
+            var result = await botFacade.ResetBotAsync(request.BotId, context.CancellationToken);
+        }
+        catch (BotAlreadyReleasedException e)
+        {
+            return BadRequest<ResetBotResponse>("Bot already acquired");
+        }
         
         storage.Bots.Find(x => x.Id == request.BotId).Status = "Available";
         

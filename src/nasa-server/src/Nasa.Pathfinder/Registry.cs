@@ -11,6 +11,7 @@ public static class Registry
     {
         services.AddGrpc(options =>
         {
+            options.Interceptors.Add<ExceptionInterceptor>();
             options.Interceptors.Add<ActivityInterceptor>();
         });
         Infrastructure.Registry.Register(services);
@@ -18,6 +19,7 @@ public static class Registry
     
     public static void RegisterContainer(ContainerBuilder builder)
     {
+        Facades.Registry.Register(builder);
         Services.Registry.Register(builder);
         Data.Registry.Register(builder);
         Infrastructure.Registry.Register(builder);

@@ -11,26 +11,19 @@ public class ActivityInterceptor(ILogger<ActivityInterceptor> logger) : Intercep
         UnaryServerMethod<TRequest, TResponse> continuation)
     {
         logger.LogInformation("started; gRPC call: {Method}", context.Method);
-        try
+        
+        var headers = context.RequestHeaders;
+        var traceId = headers.GetValue("traceId") ?? Guid.NewGuid().ToString();
+            
+        var response = await continuation(request, context);
+            
+        var responseHeaders = new Metadata
         {
-            var headers = context.RequestHeaders;
-            var traceId = headers.GetValue("traceId") ?? Guid.NewGuid().ToString();
+            { "traceId", traceId }
+        };
+        await context.WriteResponseHeadersAsync(responseHeaders);
             
-            var response = await continuation(request, context);
-            
-            var responseHeaders = new Metadata
-            {
-                { "traceId", traceId }
-            };
-            await context.WriteResponseHeadersAsync(responseHeaders);
-            
-            logger.LogInformation("completed; gRPC call completed: {Method}", context.Method);
-            return response;
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "failed; gRPC call failed: {Method}", context.Method);
-            throw;
-        }
+        logger.LogInformation("completed; gRPC call completed: {Method}", context.Method);
+        return response;
     }
 }
