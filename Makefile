@@ -1,7 +1,7 @@
 UNIT_TESTS=./src/nasa-server/tests
 
 UNIT_TEST_PROJECTS := \
-    Nasa.Pathfinder.Facades.Tests \
+    Nasa.Pathfinder.Facades.Tests/Nasa.Pathfinder.Facades.Tests.csproj \
 
 coverage:
 	@for proj in $(UNIT_TEST_PROJECTS); do \
