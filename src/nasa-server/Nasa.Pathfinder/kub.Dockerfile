@@ -6,14 +6,17 @@ EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
+
 WORKDIR /api
-COPY ["api/pathfinder.proto", "pathfinder.proto"]
-COPY ["api/messages.proto", "messages.proto"]
+COPY ["api/pathfinder.proto", "api/pathfinder.proto"]
+COPY ["api/messages.proto", "api/messages.proto"]
+
 WORKDIR /src
-COPY ["src/nasa-server/Nasa.Pathfinder/Nasa.Pathfinder.csproj", "Nasa.Pathfinder/"]
+COPY ["src/nasa-server/Nasa.Pathfinder/Nasa.Pathfinder.csproj", "nasa-server/Nasa.Pathfinder/"]
 RUN dotnet restore "Nasa.Pathfinder/Nasa.Pathfinder.csproj"
 COPY . .
-WORKDIR "/src/Nasa.Pathfinder"
+
+WORKDIR "/src/nasa-server/Nasa.Pathfinder"
 RUN dotnet build "./Nasa.Pathfinder.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
@@ -23,4 +26,5 @@ RUN dotnet publish "./Nasa.Pathfinder.csproj" -c $BUILD_CONFIGURATION -o /app/pu
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
 ENTRYPOINT ["dotnet", "Nasa.Pathfinder.dll"]
