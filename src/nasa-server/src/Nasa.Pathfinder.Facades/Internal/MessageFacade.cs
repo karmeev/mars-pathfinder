@@ -5,8 +5,8 @@ namespace Nasa.Pathfinder.Facades.Internal;
 
 internal class MessageFacade : IMessageFacade
 {
-    public Task ReceiveMessageAsync(IMessage message)
+    public async Task ReceiveMessageAsync(IMessage message)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
     }
 }

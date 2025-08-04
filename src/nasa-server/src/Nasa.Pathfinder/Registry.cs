@@ -1,4 +1,6 @@
 using Autofac;
+using Nasa.Pathfinder.Background;
+using Nasa.Pathfinder.Hubs;
 using Nasa.Pathfinder.Interceptors;
 using Nasa.Pathfinder.Tmp;
 using Pathfinder.Messages;
@@ -9,6 +11,7 @@ public static class Registry
 {
     public static void RegisterServices(IServiceCollection services)
     {
+        services.AddHostedService<StartMessageHubBackgroundTask>();
         services.AddGrpc(options =>
         {
             options.Interceptors.Add<ExceptionInterceptor>();
@@ -31,5 +34,6 @@ public static class Registry
             new Bot { Id = "bot-1233", Name = "TestBot2", Status = "Available"},
         };
         builder.RegisterInstance(str).As<BotStorage>().SingleInstance();
+        builder.RegisterType<MessageHub>().SingleInstance();
     }
 }

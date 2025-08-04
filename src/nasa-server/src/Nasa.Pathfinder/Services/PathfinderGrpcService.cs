@@ -3,15 +3,16 @@ using Grpc.Core;
 using Nasa.Pathfinder.Domain.Messages;
 using Nasa.Pathfinder.Facades.Contracts;
 using Nasa.Pathfinder.Facades.Contracts.Exceptions;
+using Nasa.Pathfinder.Hubs;
 using Nasa.Pathfinder.Tmp;
 using Pathfinder.Messages;
-using Pathfinder.Proto;
 
 namespace Nasa.Pathfinder.Services;
 
 public class PathfinderGrpcService(
     BotStorage storage,
     ILogger<PathfinderGrpcService> logger,
+    MessageHub hub,
     IBotFacade botFacade, 
     IMessageFacade messageFacade) : GrpcService
 {
@@ -89,49 +90,39 @@ public class PathfinderGrpcService(
         IServerStreamWriter<SendMessageResponse> responseStream, ServerCallContext context)
     {
         var headers = context.RequestHeaders;
-        var traceId = headers.GetValue("traceId") ?? Guid.NewGuid().ToString();
+        var clientId = headers.GetValue("clientId");
         
         try
         {
+            hub.Connect(clientId, responseStream);
+            
             await foreach (var message in requestStream.ReadAllAsync())
             {
                 var operatorMessage = new OperatorMessage
                 {
+                    ClientId = clientId,
+                    BotId = message.BotId,
                     Text = message.Message
                 };
                 await messageFacade.ReceiveMessageAsync(operatorMessage);
-                
-                await NotifyClient(message, responseStream);
             }
         }
         catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
         {
-            Console.WriteLine($"Client {traceId} disconnected intentionally.");
+            Console.WriteLine($"Client {clientId} disconnected intentionally.");
         }
         catch (IOException ex)
         {
-            Console.WriteLine($"[WARN] Client {traceId} stream aborted: {ex.Message}");
+            Console.WriteLine($"[WARN] Client {clientId} stream aborted: {ex.Message}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[ERROR] Client {traceId} error: {ex}");
+            Console.WriteLine($"[ERROR] Client {clientId} error: {ex}");
         }
         finally
         {
-            Console.WriteLine($"Client {traceId} cleanup done.");
-            // Remove from client registry if needed
+            Console.WriteLine($"Client {clientId} cleanup done.");
+            hub.Disconnect(clientId);
         }
-    }
-
-    private async Task NotifyClient(SendMessageRequest message, IServerStreamWriter<SendMessageResponse> responseStream)
-    {
-        var reply = new SendMessageResponse
-        {
-            BotId = message.BotId,
-            Message = $"Received message from Bot {message.BotId}",
-            IsLost = false
-        };
-
-        await responseStream.WriteAsync(reply);
     }
 }
