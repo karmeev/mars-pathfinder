@@ -30,6 +30,7 @@
     
     <ItemGroup>
       <ProjectReference Include="..\Nasa.Pathfinder.Data\Nasa.Pathfinder.Data.csproj" />
+      <ProjectReference Include="..\Nasa.Pathfinder.Facades.Contracts\Nasa.Pathfinder.Facades.Contracts.csproj" />
       <ProjectReference Include="..\Nasa.Pathfinder.Infrastructure\Nasa.Pathfinder.Infrastructure.csproj" />
       <ProjectReference Include="..\Nasa.Pathfinder.Services\Nasa.Pathfinder.Services.csproj" />
     </ItemGroup>

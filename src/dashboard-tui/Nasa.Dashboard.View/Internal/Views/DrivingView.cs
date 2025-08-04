@@ -59,22 +59,13 @@ internal class DrivingView(IViewFactory factory, IStore store) : IView
             new OperatorMessage { Text = input },
             stateBeforeSend.BotState.SelectedBot));
         
-        return WaitForBotResponse(previousMessageCount);
+        return WaitForBotResponse();
     }
     
-    private IView WaitForBotResponse(int previousMessageCount)
+    private IView WaitForBotResponse()
     {
         while (store.CurrentState.ControlPanelState.Messages.LastOrDefault() is not BotMessage)
         {
-            // var currentCount = store.CurrentState.ControlPanelState.Messages.Count;
-            // if (currentCount > previousMessageCount)
-            // {
-            //     AnsiConsole.Clear();
-            //     Header.RenderHeader(store.CurrentState, () => store.Dispatch(new PingAction()));
-            //     RenderChat(store.CurrentState.ControlPanelState.Messages);
-            //     return PromptLoop();
-            // }
-
             Thread.Sleep(10);
         }
         

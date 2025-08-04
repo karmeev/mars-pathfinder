@@ -1,13 +1,14 @@
 using System.Diagnostics;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Nasa.Pathfinder.Facades.Contracts;
 using Nasa.Pathfinder.Tmp;
 using Pathfinder.Messages;
 using Pathfinder.Proto;
 
 namespace Nasa.Pathfinder.Services;
 
-public class PathfinderGrpcService(BotStorage storage) : PathfinderService.PathfinderServiceBase
+public class PathfinderGrpcService(BotStorage storage, IBotFacade botFacade) : PathfinderService.PathfinderServiceBase
 {
     //private static readonly ConcurrentDictionary<string, IServerStreamWriter<MoveResponse>> ClientStreams = new();
 
@@ -25,6 +26,8 @@ public class PathfinderGrpcService(BotStorage storage) : PathfinderService.Pathf
     {
         await MakeHeader(context);
         
+        var result = await botFacade.GetBotsAsync(context.CancellationToken);
+        
         var response = new GetBotsResponse();
         response.Bots.Add(storage.Bots);
         return response;
@@ -34,6 +37,8 @@ public class PathfinderGrpcService(BotStorage storage) : PathfinderService.Pathf
     {
         await MakeHeader(context);
 
+        var result = await botFacade.SelectBotAsync(request.BotId, context.CancellationToken);
+        
         var bot = storage.Bots.FirstOrDefault(x => x.Id == request.BotId);
         
         var response = new SelectBotResponse
@@ -56,6 +61,8 @@ public class PathfinderGrpcService(BotStorage storage) : PathfinderService.Pathf
     public override async Task<ResetBotResponse> ResetBot(ResetBotRequest request, ServerCallContext context)
     {
         await MakeHeader(context);
+        
+        var result = await botFacade.ResetBotAsync(request.BotId, context.CancellationToken);
         
         storage.Bots.Find(x => x.Id == request.BotId).Status = "Available";
         
