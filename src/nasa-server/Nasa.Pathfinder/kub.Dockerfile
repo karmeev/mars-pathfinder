@@ -8,8 +8,8 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 
 WORKDIR /api
-COPY ["api/pathfinder.proto", "api/pathfinder.proto"]
-COPY ["api/messages.proto", "api/messages.proto"]
+COPY ["api/pathfinder.proto", "pathfinder.proto"]
+COPY ["api/messages.proto", "messages.proto"]
 
 WORKDIR /src
 COPY ["src/nasa-server/Nasa.Pathfinder/Nasa.Pathfinder.csproj", "nasa-server/Nasa.Pathfinder/"]
