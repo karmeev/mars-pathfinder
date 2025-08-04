@@ -6,6 +6,9 @@ EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
+WORKDIR /api
+COPY ["src/api/pathfinder.proto", "pathfinder.proto"]
+COPY ["src/api/messages.proto", "messages.proto"]
 WORKDIR /src
 COPY ["src/nasa-server/Nasa.Pathfinder/Nasa.Pathfinder.csproj", "Nasa.Pathfinder/"]
 RUN dotnet restore "Nasa.Pathfinder/Nasa.Pathfinder.csproj"
