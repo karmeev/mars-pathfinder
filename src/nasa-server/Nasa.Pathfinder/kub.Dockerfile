@@ -13,7 +13,7 @@ COPY ["api/messages.proto", "api/messages.proto"]
 
 WORKDIR /src
 COPY ["src/nasa-server/Nasa.Pathfinder/Nasa.Pathfinder.csproj", "nasa-server/Nasa.Pathfinder/"]
-RUN dotnet restore "Nasa.Pathfinder/Nasa.Pathfinder.csproj"
+RUN dotnet restore "nasa-server/Nasa.Pathfinder/Nasa.Pathfinder.csproj"
 COPY . .
 
 WORKDIR "/src/nasa-server/Nasa.Pathfinder"
