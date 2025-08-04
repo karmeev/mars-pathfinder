@@ -58,7 +58,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y make
 
       - name: Restore dependencies
-        working-directory: ./src/nasa-server/src
+        working-directory: ./src/nasa-server
         run: dotnet restore
 
       - name: Install ReportGenerator
