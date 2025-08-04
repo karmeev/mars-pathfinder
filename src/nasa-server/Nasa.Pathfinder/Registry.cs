@@ -1,4 +1,5 @@
 using Autofac;
+using Nasa.Pathfinder.Interceptors;
 using Nasa.Pathfinder.Tmp;
 using Pathfinder.Messages;
 
@@ -8,7 +9,10 @@ public static class Registry
 {
     public static void RegisterServices(IServiceCollection services)
     {
-        services.AddGrpc();
+        services.AddGrpc(options =>
+        {
+            options.Interceptors.Add<ActivityInterceptor>();
+        });
         Infrastructure.Registry.Register(services);
     }
     

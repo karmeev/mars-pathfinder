@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Nasa.Pathfinder.Domain.Messages;
 using Nasa.Pathfinder.Facades.Contracts;
 using Nasa.Pathfinder.Tmp;
 using Pathfinder.Messages;
@@ -8,14 +9,16 @@ using Pathfinder.Proto;
 
 namespace Nasa.Pathfinder.Services;
 
-public class PathfinderGrpcService(BotStorage storage, IBotFacade botFacade) : PathfinderService.PathfinderServiceBase
+public class PathfinderGrpcService(
+    BotStorage storage, 
+    IBotFacade botFacade, 
+    IMessageFacade messageFacade) : PathfinderService.PathfinderServiceBase
 {
     //private static readonly ConcurrentDictionary<string, IServerStreamWriter<MoveResponse>> ClientStreams = new();
 
     public override async Task<PingResponse> Ping(Empty request, ServerCallContext context)
     {
-        await MakeHeader(context);
-        
+        await Task.CompletedTask;
         return new PingResponse
         {
             IsSuccessful = true
@@ -24,8 +27,6 @@ public class PathfinderGrpcService(BotStorage storage, IBotFacade botFacade) : P
 
     public override async Task<GetBotsResponse> GetBots(Empty request, ServerCallContext context)
     {
-        await MakeHeader(context);
-        
         var result = await botFacade.GetBotsAsync(context.CancellationToken);
         
         var response = new GetBotsResponse();
@@ -35,8 +36,6 @@ public class PathfinderGrpcService(BotStorage storage, IBotFacade botFacade) : P
 
     public override async Task<SelectBotResponse> SelectBot(SelectBotRequest request, ServerCallContext context)
     {
-        await MakeHeader(context);
-
         var result = await botFacade.SelectBotAsync(request.BotId, context.CancellationToken);
         
         var bot = storage.Bots.FirstOrDefault(x => x.Id == request.BotId);
@@ -60,8 +59,6 @@ public class PathfinderGrpcService(BotStorage storage, IBotFacade botFacade) : P
 
     public override async Task<ResetBotResponse> ResetBot(ResetBotRequest request, ServerCallContext context)
     {
-        await MakeHeader(context);
-        
         var result = await botFacade.ResetBotAsync(request.BotId, context.CancellationToken);
         
         storage.Bots.Find(x => x.Id == request.BotId).Status = "Available";
@@ -83,7 +80,11 @@ public class PathfinderGrpcService(BotStorage storage, IBotFacade botFacade) : P
         {
             await foreach (var message in requestStream.ReadAllAsync())
             {
-                Console.WriteLine($"[{Activity.Current?.TraceId}] received message from client; botId: {message.BotId}");
+                var operatorMessage = new OperatorMessage
+                {
+                    Text = message.Message
+                };
+                await messageFacade.ReceiveMessageAsync(operatorMessage);
                 
                 await NotifyClient(message, responseStream);
             }
@@ -105,19 +106,6 @@ public class PathfinderGrpcService(BotStorage storage, IBotFacade botFacade) : P
             Console.WriteLine($"Client {traceId} cleanup done.");
             // Remove from client registry if needed
         }
-    }
-
-    private async Task MakeHeader(ServerCallContext context)
-    {
-        var headers = context.RequestHeaders;
-        var traceId = headers.GetValue("traceId") ?? Guid.NewGuid().ToString();
-        
-        var responseHeaders = new Metadata
-        {
-            { "traceId", traceId }
-        };
-        
-        await context.WriteResponseHeadersAsync(responseHeaders);
     }
 
     private async Task NotifyClient(SendMessageRequest message, IServerStreamWriter<SendMessageResponse> responseStream)
