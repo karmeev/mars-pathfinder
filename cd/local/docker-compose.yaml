@@ -1,0 +1,10 @@
+services:
+  nasa-server:
+    build:
+      context: ./../../
+      dockerfile: ./src/nasa-server/Nasa.Pathfinder/Dockerfile
+    container_name: nasa-server
+    image: nasa-server:local
+    ports:
+      - "8080:8080"
+      - "8081:8081"

@@ -12,7 +12,13 @@ COPY ["api/pathfinder.proto", "pathfinder.proto"]
 COPY ["api/messages.proto", "messages.proto"]
 
 WORKDIR /src
-COPY ["src/nasa-server/Nasa.Pathfinder/Nasa.Pathfinder.csproj", "nasa-server/Nasa.Pathfinder/"]
+COPY ["src/nasa-server/Nasa.Pathfinder/", "nasa-server/Nasa.Pathfinder/"]
+COPY ["src/nasa-server/Nasa.Pathfinder.Domain/", "nasa-server/Nasa.Pathfinder.Domain/"]
+COPY ["src/nasa-server/Nasa.Pathfinder.Data/", "nasa-server/Nasa.Pathfinder.Data/"]
+COPY ["src/nasa-server/Nasa.Pathfinder.Facades.Contracts/", "nasa-server/Nasa.Pathfinder.Facades.Contracts/"]
+COPY ["src/nasa-server/Nasa.Pathfinder.Infrastructure/", "nasa-server/Nasa.Pathfinder.Infrastructure/"]
+COPY ["src/nasa-server/Nasa.Pathfinder.Services/", "nasa-server/Nasa.Pathfinder.Services/"]
+
 RUN dotnet restore "nasa-server/Nasa.Pathfinder/Nasa.Pathfinder.csproj"
 COPY . .
 
