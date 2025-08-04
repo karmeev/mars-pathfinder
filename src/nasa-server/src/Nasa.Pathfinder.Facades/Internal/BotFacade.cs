@@ -15,7 +15,7 @@ internal class BotFacade(IBotRepository repository) : IBotFacade
             var bots = await repository.GetBotsAsync(ct);
             return bots;
         }
-        catch (Exception ex) when (ex is OperationCanceledException or TimeoutException)
+        catch (Exception ex) when (ex is OperationCanceledException)
         {
             return [];
         }
@@ -32,7 +32,7 @@ internal class BotFacade(IBotRepository repository) : IBotFacade
         {
             return BotAlreadyAcquiredException.Throw<Bot>(ex);
         }
-        catch (Exception ex) when (ex is OperationCanceledException or TimeoutException)
+        catch (Exception ex) when (ex is OperationCanceledException)
         {
             return new Bot();
         }
@@ -49,7 +49,7 @@ internal class BotFacade(IBotRepository repository) : IBotFacade
         {
             return BotAlreadyReleasedException.Throw<Bot>(ex);
         }
-        catch (Exception ex) when (ex is OperationCanceledException or TimeoutException)
+        catch (Exception ex) when (ex is OperationCanceledException)
         {
             return new Bot();
         }

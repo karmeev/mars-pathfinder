@@ -35,20 +35,6 @@ public class BotFacadeTests
     }
     
     [Test]
-    public async Task GetBotsAsync_DatabaseNotRespond_ShouldReturnEmptyList()
-    {
-        await TestRunner<BotFacade, IEnumerable<Bot>>
-            .Arrange(() =>
-            {
-                _repositoryMock.Setup(x => x.GetBotsAsync(It.IsAny<CancellationToken>()))
-                    .Callback(() => throw new TimeoutException());
-                return new BotFacade(_repositoryMock.Object);
-            })
-            .ActAsync(sut => sut.GetBotsAsync(CancellationToken.None))
-            .ThenAssertAsync(result => result.Should().BeEmpty());
-    }
-    
-    [Test]
     public async Task GetBotsAsync_RequestAborted_ShouldReturnEmptyList()
     {
         await TestRunner<BotFacade, IEnumerable<Bot>>
@@ -91,20 +77,6 @@ public class BotFacadeTests
     }
     
     [Test]
-    public async Task SelectBotAsync_DatabaseNotRespond_ShouldReturnBot()
-    {
-        await TestRunner<BotFacade, Bot>
-            .Arrange(() =>
-            {
-                _repositoryMock.Setup(x => x.SelectBotAsync(It.IsAny<string>(),It.IsAny<CancellationToken>()))
-                    .Callback(() => throw new TimeoutException());
-                return new BotFacade(_repositoryMock.Object);
-            })
-            .ActAsync(sut => sut.SelectBotAsync(It.IsAny<string>(),It.IsAny<CancellationToken>()))
-            .ThenAssertAsync(result => result.Should().NotBeNull());
-    }
-    
-    [Test]
     public async Task SelectBotAsync_RequestAborted_ShouldReturnBot()
     {
         await TestRunner<BotFacade, Bot>
@@ -115,6 +87,48 @@ public class BotFacadeTests
                 return new BotFacade(_repositoryMock.Object);
             })
             .ActAsync(sut => sut.SelectBotAsync(It.IsAny<string>(),It.IsAny<CancellationToken>()))
+            .ThenAssertAsync(result => result.Should().NotBeNull());
+    }
+    
+    [Test]
+    public async Task ResetBotAsync_RepoReturnsBot_ShouldReturnBot()
+    {
+        await TestRunner<BotFacade, Bot>
+            .Arrange(() =>
+            {
+                _repositoryMock.Setup(x => x.ResetBotAsync(It.IsAny<string>(),It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(new Bot());
+                return new BotFacade(_repositoryMock.Object);
+            })
+            .ActAsync(sut => sut.ResetBotAsync(Guid.NewGuid().ToString() ,CancellationToken.None))
+            .ThenAssertAsync(result => result.Should().NotBeNull());
+    }
+    
+    [Test]
+    public async Task ResetBotAsync_ThrowsOptimisticConcurrency_ShouldThrowBotAlreadyAcquiredException()
+    {
+        await TestRunner<BotFacade, Bot>
+            .Arrange(() =>
+            {
+                _repositoryMock.Setup(x => x.ResetBotAsync(It.IsAny<string>(),It.IsAny<CancellationToken>()))
+                    .Callback(() => throw new OptimisticConcurrencyException(string.Empty));
+                return new BotFacade(_repositoryMock.Object);
+            })
+            .ActAsync(sut => sut.ResetBotAsync(Guid.NewGuid().ToString() ,CancellationToken.None))
+            .ThenThrowAsync<BotFacade, Bot, BotAlreadyReleasedException>();
+    }
+    
+    [Test]
+    public async Task ResetBotAsync_RequestAborted_ShouldReturnBot()
+    {
+        await TestRunner<BotFacade, Bot>
+            .Arrange(() =>
+            {
+                _repositoryMock.Setup(x => x.ResetBotAsync(It.IsAny<string>(),It.IsAny<CancellationToken>()))
+                    .Callback(() => throw new OperationCanceledException());
+                return new BotFacade(_repositoryMock.Object);
+            })
+            .ActAsync(sut => sut.ResetBotAsync(It.IsAny<string>(),It.IsAny<CancellationToken>()))
             .ThenAssertAsync(result => result.Should().NotBeNull());
     }
 }
