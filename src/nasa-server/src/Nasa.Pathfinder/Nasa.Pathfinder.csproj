@@ -24,8 +24,8 @@
     </ItemGroup>
     
     <ItemGroup>
-        <Protobuf Include="..\..\..\api\pathfinder.proto" Link="Protos\pathfinder.proto" GrpcServices="Server" />
-        <Protobuf Include="..\..\..\api\messages.proto" Link="Protos\messages.proto" />
+        <Protobuf Include="..\..\..\..\api\pathfinder.proto" Link="Protos\pathfinder.proto" GrpcServices="Server" />
+        <Protobuf Include="..\..\..\..\api\messages.proto" Link="Protos\messages.proto" />
     </ItemGroup>
     
     <ItemGroup>
