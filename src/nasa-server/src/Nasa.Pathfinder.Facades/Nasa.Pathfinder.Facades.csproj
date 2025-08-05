@@ -9,6 +9,8 @@
     <ItemGroup>
       <ProjectReference Include="..\Nasa.Pathfinder.Data.Contracts\Nasa.Pathfinder.Data.Contracts.csproj" />
       <ProjectReference Include="..\Nasa.Pathfinder.Facades.Contracts\Nasa.Pathfinder.Facades.Contracts.csproj" />
+      <ProjectReference Include="..\Nasa.Pathfinder.Infrastructure.Contracts\Nasa.Pathfinder.Infrastructure.Contracts.csproj" />
+      <ProjectReference Include="..\Nasa.Pathfinder.Services.Contracts\Nasa.Pathfinder.Services.Contracts.csproj" />
     </ItemGroup>
 
     <ItemGroup>

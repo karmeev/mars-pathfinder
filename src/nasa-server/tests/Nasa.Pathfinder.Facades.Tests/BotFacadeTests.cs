@@ -73,7 +73,7 @@ public class BotFacadeTests
                 return new BotFacade(_repositoryMock.Object);
             })
             .ActAsync(sut => sut.SelectBotAsync(Guid.NewGuid().ToString() ,CancellationToken.None))
-            .ThenThrowAsync<BotFacade, Bot, BotAlreadyAcquiredException>();
+            .ThenAssertThrowsAsync<BotFacade, Bot, BotAlreadyAcquiredException>();
     }
     
     [Test]
@@ -115,7 +115,7 @@ public class BotFacadeTests
                 return new BotFacade(_repositoryMock.Object);
             })
             .ActAsync(sut => sut.ResetBotAsync(Guid.NewGuid().ToString() ,CancellationToken.None))
-            .ThenThrowAsync<BotFacade, Bot, BotAlreadyReleasedException>();
+            .ThenAssertThrowsAsync<BotFacade, Bot, BotAlreadyReleasedException>();
     }
     
     [Test]

@@ -4,5 +4,5 @@ namespace Nasa.Pathfinder.Facades.Contracts;
 
 public interface IMessageFacade
 {
-    Task ReceiveMessageAsync(IMessage message);
+    Task ReceiveMessageAsync(IMessage message, CancellationToken ct = default);
 }

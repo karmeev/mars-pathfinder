@@ -104,7 +104,7 @@ public class PathfinderGrpcService(
                     BotId = message.BotId,
                     Text = message.Message
                 };
-                await messageFacade.ReceiveMessageAsync(operatorMessage);
+                await messageFacade.ReceiveMessageAsync(operatorMessage, context.CancellationToken);
             }
         }
         catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
