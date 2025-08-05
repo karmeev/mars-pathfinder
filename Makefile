@@ -23,7 +23,7 @@ coverage:
 	reportgenerator \
 		-reports:./TestResults/**/coverage.cobertura.xml \
 		-targetdir:./TestResults/CoverageReport \
-		-reporttypes:MarkdownSummaryGithub
+		-reporttypes:MarkdownSummaryGithub \
 		-assemblyfilters:+Nasa.*;-Nasa.*.Contracts;-Nasa.Domain;-Nasa.*.Tests;-xunit*;-System.*;-Microsoft.*
 
 test:
@@ -48,9 +48,9 @@ test:
 
 integration_tests_up:
 	echo "Using IMAGE_TAG: $(IMAGE_TAG)"
-	echo "IMAGE_TAG=$(IMAGE_TAG)" > infra/docker/.env
+	echo "IMAGE_TAG=$(IMAGE_TAG)" > .env
 	echo "APP_VERSION=$(cat VERSION.txt)" >> .env
-	docker compose -f ${APP_TEST}/docker-compose.master.yaml up -d
+	docker compose -f ${APP_TEST}/docker-compose.yaml up -d
 
 integration_tests_down:
-	docker compose -f ${APP_TEST}/docker-compose.master.yaml down
+	docker compose -f ${APP_TEST}/docker-compose.yaml down
