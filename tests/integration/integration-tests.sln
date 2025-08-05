@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nasa.IntegrationTests", "Nasa.IntegrationTests\Nasa.IntegrationTests.csproj", "{290EC547-6508-49DF-AB67-2456E98216E9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nasa.IntegrationTests.Pathfinder", "Nasa.IntegrationTests.Pathfinder\Nasa.IntegrationTests.Pathfinder.csproj", "{4879B4E7-BC2B-43DB-8CC5-5B26272939F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{290EC547-6508-49DF-AB67-2456E98216E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{290EC547-6508-49DF-AB67-2456E98216E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{290EC547-6508-49DF-AB67-2456E98216E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4879B4E7-BC2B-43DB-8CC5-5B26272939F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4879B4E7-BC2B-43DB-8CC5-5B26272939F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4879B4E7-BC2B-43DB-8CC5-5B26272939F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4879B4E7-BC2B-43DB-8CC5-5B26272939F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
