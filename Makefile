@@ -24,7 +24,7 @@ coverage:
 		-reports:./TestResults/**/coverage.cobertura.xml \
 		-targetdir:./TestResults/CoverageReport \
 		-reporttypes:MarkdownSummaryGithub
-		-assemblyfilters:+Currency.*;-*.Contracts;-*Tests;-xunit*;-System.*;-Microsoft.*
+		-assemblyfilters:+Nasa.*;-Nasa.*.Contracts;-Nasa.Domain;-Nasa.*.Tests;-xunit*;-System.*;-Microsoft.*
 
 test:
 	@if [ "$(CATEGORY)" = "Unit" ]; then \

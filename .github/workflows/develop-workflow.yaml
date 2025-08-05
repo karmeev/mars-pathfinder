@@ -40,7 +40,7 @@ jobs:
         run: |
           docker build -t $IMAGE_NAME:${{ steps.tag.outputs.tag }} -f src/nasa-server/src/Nasa.Pathfinder/kub.Dockerfile .
           docker push $IMAGE_NAME:${{ steps.tag.outputs.tag }}
-          
+  
   integration-tests:
     needs: build
     runs-on: ubuntu-latest
@@ -57,8 +57,8 @@ jobs:
 
       - name: Restore and Build
         run: |
-          dotnet restore ./src/nasa-server/src/nasa-server.sln
-          dotnet build ./src/nasa-server/src/nasa-server.sln --configuration Release --no-restore
+          dotnet restore ./src/nasa-server/nasa-server.sln
+          dotnet build ./src/nasa-server/nasa-server.sln --configuration Release --no-restore
 
       - name: Start Currency API & WireMock
         run: make integration_tests_up IMAGE_TAG=${{ needs.build.outputs.image_tag }}
@@ -68,4 +68,4 @@ jobs:
 
       - name: Stop API
         if: always()
-        run: make integration_tests_down
+        run: make integration_tests_down        
