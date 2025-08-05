@@ -1,3 +1,4 @@
+using Bogus;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Moq;
 using Nasa.Pathfinder.Data.Contracts.Repositories;
@@ -32,25 +33,46 @@ public class MessageFacadeTests
     [Test]
     public async Task ReceiveMessageAsync_PositionReachable_ShouldMoveNext()
     {
+        const string input = "FRFFL";
+        var botId = new Faker().Random.Hash();
+        var clientId = new Faker().Random.Hash();
+        
         await TestRunner<MessageFacade>
             .Arrange(() =>
             {
-                _decoderServiceMock.Setup(x => x.DecodeOperatorMessage(It.IsAny<string>()))
+                _decoderServiceMock.Setup(x => x.DecodeOperatorMessage(
+                        It.Is<string>(i => i.Equals(input))))
                     .Returns(new BotCommand(new List<IOperatorCommand>
                     {
                         new MoveFront(),
-                        new MoveLeft(),
+                        new MoveRight(),
                         new MoveFront(),
                         new MoveFront(),
-                        new MoveRight()
+                        new MoveLeft()
                     }));
 
                 _repositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(new Bot());
+                    .ReturnsAsync(new Bot
+                    {
+                        Id = botId,
+                        Name = new Faker().Hacker.Noun(),
+                        Status = BotStatus.Acquired,
+                        Position = new Position
+                        {
+                            X = 1,
+                            Y = 1,
+                            Direction = Direction.N
+                        }
+                    });
 
                 _worldMapServiceMock.Setup(x => x.CalculateDesiredPosition(It.IsAny<Position>(),
                     It.IsAny<IEnumerable<IOperatorCommand>>()))
-                    .Returns(new Position());
+                    .Returns(new Position
+                    {
+                        X = 4,
+                        Y = 3,
+                        Direction = Direction.N
+                    });
 
                 //We don't have a funerals now
                 _worldMapServiceMock.Setup(x => x.GetFuneralsAsync(It.IsAny<CancellationToken>()))
@@ -65,7 +87,7 @@ public class MessageFacadeTests
                             It.IsAny<Position>(), 
                             It.Is<bool>(b => b == false), 
                             It.Is<bool>(b => b == false)))
-                    .Returns("1 1 N");
+                    .Returns("4 3 N");
                 
                 _streamMock.Setup(x => x.SendMessage(It.IsAny<SendMessageRequest>())).Verifiable();
                 
@@ -74,10 +96,169 @@ public class MessageFacadeTests
             })
             .ActAsync(sut => sut.ReceiveMessageAsync(new OperatorMessage
             {
-                BotId = "",
-                ClientId = "",
-                Text = "FLFFR"
+                BotId = botId,
+                ClientId = clientId,
+                Text = input
             }))
-            .ThenAssertDoesNotThrowAsync();
+            .ThenAssertAsync(() =>
+            {
+                _worldMapServiceMock.Verify(x =>
+                        x.ChangeBotPositionAsync(It.IsAny<Position>(), It.IsAny<CancellationToken>()),
+                    Times.Once);
+                
+                _streamMock.Verify(x => x.SendMessage(It.IsAny<SendMessageRequest>()), Times.Once);
+            });
+    }
+    
+    [Test]
+    public async Task ReceiveMessageAsync_HasFuneral_ShouldStayAtPlace()
+    {
+        const string input = "FRFFL";
+        var botId = new Faker().Random.Hash();
+        var clientId = new Faker().Random.Hash();
+        
+        var desiredPosition = new Position
+        {
+            X = 4,
+            Y = 3,
+            Direction = Direction.N
+        };
+        
+        await TestRunner<MessageFacade>
+            .Arrange(() =>
+            {
+                _decoderServiceMock.Setup(x => x.DecodeOperatorMessage(
+                        It.Is<string>(i => i.Equals(input))))
+                    .Returns(new BotCommand(new List<IOperatorCommand>
+                    {
+                        new MoveFront(),
+                        new MoveRight(),
+                        new MoveFront(),
+                        new MoveFront(),
+                        new MoveLeft()
+                    }));
+
+                _repositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(new Bot
+                    {
+                        Id = botId,
+                        Name = new Faker().Hacker.Noun(),
+                        Status = BotStatus.Acquired,
+                        Position = new Position
+                        {
+                            X = 1,
+                            Y = 1,
+                            Direction = Direction.N
+                        }
+                    });
+
+                _worldMapServiceMock.Setup(x => x.CalculateDesiredPosition(It.IsAny<Position>(),
+                    It.IsAny<IEnumerable<IOperatorCommand>>()))
+                    .Returns(desiredPosition);
+
+                _worldMapServiceMock.Setup(x => x.GetFuneralsAsync(It.IsAny<CancellationToken>()))
+                    .ReturnsAsync([desiredPosition]);
+
+                _worldMapServiceMock.Setup(x =>
+                    x.TryReachPosition(It.IsAny<Position>(), It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(true);
+
+                _decoderServiceMock.Setup(x =>
+                        x.EncodeBotMessage(
+                            It.IsAny<Position>(), 
+                            It.Is<bool>(b => b == false), 
+                            It.Is<bool>(b => b == false)))
+                    .Returns("4 3 N");
+                
+                return new MessageFacade(_repositoryMock.Object, _decoderServiceMock.Object, 
+                    _worldMapServiceMock.Object, _streamMock.Object);
+            })
+            .ActAsync(sut => sut.ReceiveMessageAsync(new OperatorMessage
+            {
+                BotId = botId,
+                ClientId = clientId,
+                Text = input
+            }))
+            .ThenAssertAsync(() =>
+            {
+                _worldMapServiceMock.Verify(x =>
+                        x.ChangeBotPositionAsync(It.IsAny<Position>(), It.IsAny<CancellationToken>()),
+                    Times.Never);
+                
+                _streamMock.Verify(x => x.SendMessage(It.IsAny<SendMessageRequest>()), Times.Once);
+            });
+    }
+    
+    [Test]
+    public async Task ReceiveMessageAsync_CantReachPosition_ShouldLost()
+    {
+        const string input = "FRFFL";
+        var botId = new Faker().Random.Hash();
+        var clientId = new Faker().Random.Hash();
+        
+        var desiredPosition = new Position
+        {
+            X = 199,
+            Y = 3,
+            Direction = Direction.N
+        };
+        
+        await TestRunner<MessageFacade>
+            .Arrange(() =>
+            {
+                _decoderServiceMock.Setup(x => x.DecodeOperatorMessage(
+                        It.Is<string>(i => i.Equals(input))))
+                    .Returns(new BotCommand([]));
+
+                _repositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(new Bot
+                    {
+                        Id = botId,
+                        Name = new Faker().Hacker.Noun(),
+                        Status = BotStatus.Acquired,
+                        Position = new Position
+                        {
+                            X = 1,
+                            Y = 1,
+                            Direction = Direction.N
+                        }
+                    });
+
+                _worldMapServiceMock.Setup(x => x.CalculateDesiredPosition(It.IsAny<Position>(),
+                    It.IsAny<IEnumerable<IOperatorCommand>>()))
+                    .Returns(desiredPosition);
+
+                _worldMapServiceMock.Setup(x => x.GetFuneralsAsync(It.IsAny<CancellationToken>()))
+                    .ReturnsAsync([]);
+
+                _worldMapServiceMock.Setup(x =>
+                    x.TryReachPosition(It.IsAny<Position>(), It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(false);
+
+                _decoderServiceMock.Setup(x =>
+                        x.EncodeBotMessage(
+                            It.IsAny<Position>(), 
+                            It.Is<bool>(b => b == false), 
+                            It.Is<bool>(b => b == false)))
+                    .Returns("199 3 N");
+                
+                return new MessageFacade(_repositoryMock.Object, _decoderServiceMock.Object, 
+                    _worldMapServiceMock.Object, _streamMock.Object);
+            })
+            .ActAsync(sut => sut.ReceiveMessageAsync(new OperatorMessage
+            {
+                BotId = botId,
+                ClientId = clientId,
+                Text = input
+            }))
+            .ThenAssertAsync(() =>
+            {
+                _worldMapServiceMock.Verify(x =>
+                        x.ChangeBotPositionAsync(It.IsAny<Position>(), It.IsAny<CancellationToken>()),
+                    Times.Once);
+                
+                _streamMock.Verify(x => 
+                    x.SendMessage(It.Is<SendMessageRequest>(r => r.IsLost)), Times.Once);
+            });
     }
 }
