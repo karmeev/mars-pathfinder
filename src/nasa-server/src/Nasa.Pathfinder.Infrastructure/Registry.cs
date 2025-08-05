@@ -1,9 +1,11 @@
 using System.Threading.Channels;
 using Autofac;
 using Microsoft.Extensions.DependencyInjection;
+using Nasa.Pathfinder.Infrastructure.Contracts.DataContexts;
 using Nasa.Pathfinder.Infrastructure.Contracts.Grpc;
 using Nasa.Pathfinder.Infrastructure.Contracts.Grpc.Requests;
 using Nasa.Pathfinder.Infrastructure.Internal.Grpc;
+using Nasa.Pathfinder.Infrastructure.Internal.Memory;
 
 namespace Nasa.Pathfinder.Infrastructure;
 
@@ -16,6 +18,8 @@ public static class Registry
     
     public static void Register(ContainerBuilder builder)
     {
+        builder.RegisterType<MemoryDataContext>().As<IMemoryDataContext>().SingleInstance();
+        
         builder.RegisterType<OperatorStream>().As<IOperatorStream>().SingleInstance();
         
         var capacity = new BoundedChannelOptions(100);

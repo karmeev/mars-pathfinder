@@ -16,8 +16,6 @@ public class PathfinderGrpcService(
     IBotFacade botFacade, 
     IMessageFacade messageFacade) : GrpcService
 {
-    //private static readonly ConcurrentDictionary<string, IServerStreamWriter<MoveResponse>> ClientStreams = new();
-
     public override async Task<PingResponse> Ping(Empty request, ServerCallContext context)
     {
         await Task.CompletedTask;
@@ -32,7 +30,16 @@ public class PathfinderGrpcService(
         var result = await botFacade.GetBotsAsync(context.CancellationToken);
         
         var response = new GetBotsResponse();
-        response.Bots.Add(storage.Bots);
+        foreach (var bot in result)
+        {
+            response.Bots.Add(new Bot
+            {
+                Id = bot.Id,
+                Name = bot.Name,
+                Status = bot.Status.ToString(),
+            });
+        }
+
         return response;
     }
 
@@ -40,50 +47,45 @@ public class PathfinderGrpcService(
     {
         try
         {
-            var result = await botFacade.SelectBotAsync(request.BotId, context.CancellationToken);
+            var bot = await botFacade.SelectBotAsync(request.BotId, context.CancellationToken);
+            
+            return new SelectBotResponse
+            {
+                Bot = new Bot
+                {
+                    Id = bot.Id,
+                    Name = bot.Name,
+                    Status = bot.Status.ToString(),
+                },
+            };
         }
         catch (BotAlreadyAcquiredException e)
         {
             return BadRequest<SelectBotResponse>("Bot already acquired");
         }
-        
-        var bot = storage.Bots.FirstOrDefault(x => x.Id == request.BotId);
-        
-        var response = new SelectBotResponse
-        {
-            Bot = new Bot
-            {
-                Id = bot.Id,
-                Name = bot.Name,
-                Status = bot.Status,
-            },
-        };
-        
-        storage.Bots.Remove(bot);
-        bot.Status = "Acquired";
-        storage.Bots.Add(bot);
-        
-        return response;
     }
 
     public override async Task<ResetBotResponse> ResetBot(ResetBotRequest request, ServerCallContext context)
     {
         try
         {
-            var result = await botFacade.ResetBotAsync(request.BotId, context.CancellationToken);
+            var bot = await botFacade.ResetBotAsync(request.BotId, context.CancellationToken);
+            
+            var response = new ResetBotResponse
+            {
+                Bot = new Bot
+                {
+                    Id = bot.Id,
+                    Name = bot.Name,
+                    Status = bot.Status.ToString(),
+                },
+            };
+            return response;
         }
         catch (BotAlreadyReleasedException e)
         {
-            return BadRequest<ResetBotResponse>("Bot already acquired");
+            return BadRequest<ResetBotResponse>("Bot already released");
         }
-        
-        storage.Bots.Find(x => x.Id == request.BotId).Status = "Available";
-        
-        var response = new ResetBotResponse
-        {
-            Bot = storage.Bots.FirstOrDefault(x => x.Id == request.BotId)
-        };
-        return response;
     }
 
     public override async Task SendMessage(IAsyncStreamReader<SendMessageRequest> requestStream, 

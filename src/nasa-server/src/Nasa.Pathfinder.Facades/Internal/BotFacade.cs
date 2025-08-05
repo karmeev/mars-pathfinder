@@ -25,12 +25,16 @@ internal class BotFacade(IBotRepository repository) : IBotFacade
     {
         try
         {
-            var bot = await repository.SelectBotAsync(botId, ct);
+            var bot = await repository.ChangeBotStatusAsync(botId, BotStatus.Acquired, ct);
             return bot;
         }
-        catch (OptimisticConcurrencyException ex)
+        catch (DataException ex)
         {
-            return BotAlreadyAcquiredException.Throw<Bot>(ex);
+            return BotAlreadyAcquiredException.ThrowIfInvalidData<Bot>(ex.Message, ex);
+        }
+        catch (ConcurrencyException ex)
+        {
+            return BotAlreadyAcquiredException.ThrowIfConcurrency<Bot>(ex);
         }
         catch (Exception ex) when (ex is OperationCanceledException)
         {
@@ -42,12 +46,16 @@ internal class BotFacade(IBotRepository repository) : IBotFacade
     {
         try
         {
-            var bot = await repository.ResetBotAsync(botId, ct);
+            var bot = await repository.ChangeBotStatusAsync(botId, BotStatus.Available, ct);
             return bot;
         }
-        catch (OptimisticConcurrencyException ex)
+        catch (DataException ex)
         {
-            return BotAlreadyReleasedException.Throw<Bot>(ex);
+            return BotAlreadyReleasedException.ThrowIfInvalidData<Bot>(ex.Message, ex);
+        }
+        catch (ConcurrencyException ex)
+        {
+            return BotAlreadyReleasedException.ThrowIfConcurrency<Bot>(ex);
         }
         catch (Exception ex) when (ex is OperationCanceledException)
         {

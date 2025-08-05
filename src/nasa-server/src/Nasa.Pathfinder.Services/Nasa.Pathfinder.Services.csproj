@@ -11,10 +11,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Internal\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Nasa.Pathfinder.Services.Contracts\Nasa.Pathfinder.Services.Contracts.csproj" />
     </ItemGroup>
 

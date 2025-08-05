@@ -11,7 +11,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Internal\" />
+      <ProjectReference Include="..\Nasa.Pathfinder.Data.Contracts\Nasa.Pathfinder.Data.Contracts.csproj" />
+      <ProjectReference Include="..\Nasa.Pathfinder.Infrastructure.Contracts\Nasa.Pathfinder.Infrastructure.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

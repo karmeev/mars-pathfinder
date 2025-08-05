@@ -54,7 +54,8 @@ public class BotFacadeTests
         await TestRunner<BotFacade, Bot>
             .Arrange(() =>
             {
-                _repositoryMock.Setup(x => x.SelectBotAsync(It.IsAny<string>(),It.IsAny<CancellationToken>()))
+                _repositoryMock.Setup(x => 
+                        x.ChangeBotStatusAsync(It.IsAny<string>(), BotStatus.Acquired, It.IsAny<CancellationToken>()))
                     .ReturnsAsync(new Bot());
                 return new BotFacade(_repositoryMock.Object);
             })
@@ -63,13 +64,29 @@ public class BotFacadeTests
     }
     
     [Test]
-    public async Task SelectBotAsync_ThrowsOptimisticConcurrency_ShouldThrowBotAlreadyAcquiredException()
+    public async Task SelectBotAsync_ThrowsOptimisticConcurrencyException_ShouldThrowBotAlreadyAcquiredException()
     {
         await TestRunner<BotFacade, Bot>
             .Arrange(() =>
             {
-                _repositoryMock.Setup(x => x.SelectBotAsync(It.IsAny<string>(),It.IsAny<CancellationToken>()))
-                    .Callback(() => throw new OptimisticConcurrencyException(string.Empty));
+                _repositoryMock.Setup(x => 
+                        x.ChangeBotStatusAsync(It.IsAny<string>(), BotStatus.Acquired, It.IsAny<CancellationToken>()))
+                    .Callback(() => throw new ConcurrencyException(string.Empty));
+                return new BotFacade(_repositoryMock.Object);
+            })
+            .ActAsync(sut => sut.SelectBotAsync(Guid.NewGuid().ToString() ,CancellationToken.None))
+            .ThenAssertThrowsAsync<BotFacade, Bot, BotAlreadyAcquiredException>();
+    }
+    
+    [Test]
+    public async Task SelectBotAsync_ThrowsDataException_ShouldThrowBotAlreadyAcquiredException()
+    {
+        await TestRunner<BotFacade, Bot>
+            .Arrange(() =>
+            {
+                _repositoryMock.Setup(x => 
+                        x.ChangeBotStatusAsync(It.IsAny<string>(), BotStatus.Acquired, It.IsAny<CancellationToken>()))
+                    .Callback(() => throw new DataException(string.Empty));
                 return new BotFacade(_repositoryMock.Object);
             })
             .ActAsync(sut => sut.SelectBotAsync(Guid.NewGuid().ToString() ,CancellationToken.None))
@@ -82,7 +99,8 @@ public class BotFacadeTests
         await TestRunner<BotFacade, Bot>
             .Arrange(() =>
             {
-                _repositoryMock.Setup(x => x.SelectBotAsync(It.IsAny<string>(),It.IsAny<CancellationToken>()))
+                _repositoryMock.Setup(x => 
+                        x.ChangeBotStatusAsync(It.IsAny<string>(), BotStatus.Acquired, It.IsAny<CancellationToken>()))
                     .Callback(() => throw new OperationCanceledException());
                 return new BotFacade(_repositoryMock.Object);
             })
@@ -96,7 +114,8 @@ public class BotFacadeTests
         await TestRunner<BotFacade, Bot>
             .Arrange(() =>
             {
-                _repositoryMock.Setup(x => x.ResetBotAsync(It.IsAny<string>(),It.IsAny<CancellationToken>()))
+                _repositoryMock.Setup(x => 
+                        x.ChangeBotStatusAsync(It.IsAny<string>(), BotStatus.Available,It.IsAny<CancellationToken>()))
                     .ReturnsAsync(new Bot());
                 return new BotFacade(_repositoryMock.Object);
             })
@@ -105,13 +124,29 @@ public class BotFacadeTests
     }
     
     [Test]
-    public async Task ResetBotAsync_ThrowsOptimisticConcurrency_ShouldThrowBotAlreadyAcquiredException()
+    public async Task ResetBotAsync_ThrowsOptimisticConcurrencyException_ShouldThrowBotAlreadyReleasedException()
     {
         await TestRunner<BotFacade, Bot>
             .Arrange(() =>
             {
-                _repositoryMock.Setup(x => x.ResetBotAsync(It.IsAny<string>(),It.IsAny<CancellationToken>()))
-                    .Callback(() => throw new OptimisticConcurrencyException(string.Empty));
+                _repositoryMock.Setup(x => 
+                        x.ChangeBotStatusAsync(It.IsAny<string>(), BotStatus.Available,It.IsAny<CancellationToken>()))
+                    .Callback(() => throw new ConcurrencyException(string.Empty));
+                return new BotFacade(_repositoryMock.Object);
+            })
+            .ActAsync(sut => sut.ResetBotAsync(Guid.NewGuid().ToString() ,CancellationToken.None))
+            .ThenAssertThrowsAsync<BotFacade, Bot, BotAlreadyReleasedException>();
+    }
+    
+    [Test]
+    public async Task ResetBotAsync_ThrowsDataException_ShouldThrowBotAlreadyReleasedException()
+    {
+        await TestRunner<BotFacade, Bot>
+            .Arrange(() =>
+            {
+                _repositoryMock.Setup(x => 
+                        x.ChangeBotStatusAsync(It.IsAny<string>(), BotStatus.Available,It.IsAny<CancellationToken>()))
+                    .Callback(() => throw new DataException(string.Empty));
                 return new BotFacade(_repositoryMock.Object);
             })
             .ActAsync(sut => sut.ResetBotAsync(Guid.NewGuid().ToString() ,CancellationToken.None))
@@ -124,7 +159,8 @@ public class BotFacadeTests
         await TestRunner<BotFacade, Bot>
             .Arrange(() =>
             {
-                _repositoryMock.Setup(x => x.ResetBotAsync(It.IsAny<string>(),It.IsAny<CancellationToken>()))
+                _repositoryMock.Setup(x => 
+                        x.ChangeBotStatusAsync(It.IsAny<string>(), BotStatus.Available,It.IsAny<CancellationToken>()))
                     .Callback(() => throw new OperationCanceledException());
                 return new BotFacade(_repositoryMock.Object);
             })

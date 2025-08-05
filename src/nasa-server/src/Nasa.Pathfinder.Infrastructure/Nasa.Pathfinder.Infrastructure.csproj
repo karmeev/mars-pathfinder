@@ -13,10 +13,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Internal\InMemoryCache\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Nasa.Pathfinder.Infrastructure.Contracts\Nasa.Pathfinder.Infrastructure.Contracts.csproj" />
     </ItemGroup>
 

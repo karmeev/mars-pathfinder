@@ -2,7 +2,7 @@ using Nasa.Pathfinder.Hubs;
 
 namespace Nasa.Pathfinder.Background;
 
-public class StartMessageHubBackgroundTask(MessageHub hub): IHostedService
+public class StartMessageHubBackgroundTask(MessageHub hub) : IHostedService
 {
     public Task StartAsync(CancellationToken cancellationToken)
     {

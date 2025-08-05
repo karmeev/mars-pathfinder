@@ -12,6 +12,7 @@ public static class Registry
     public static void RegisterServices(IServiceCollection services)
     {
         services.AddHostedService<StartMessageHubBackgroundTask>();
+        services.AddHostedService<MigrationBackgroundTask>();
         services.AddGrpc(options =>
         {
             options.Interceptors.Add<ExceptionInterceptor>();
