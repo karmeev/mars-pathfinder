@@ -1,7 +1,10 @@
-name: Default
-run-name: 🧑🏻‍🚀 Based workflow
+name: Stage
+run-name: 🤝 Let's test
 on:
   push:
+    branches: [ stage ]
+  workflow_dispatch:
+
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/mars-pathfinder
 
@@ -31,48 +34,38 @@ jobs:
 
       - name: Generate image tag
         id: tag
-        run: echo "tag=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+        run: echo "tag=stage-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
-      - name: Build Docker image
+      - name: Build and push Docker image
         run: |
           docker build -t $IMAGE_NAME:${{ steps.tag.outputs.tag }} -f src/nasa-server/src/Nasa.Pathfinder/kub.Dockerfile .
-          
-  unit-tests:
+          docker push $IMAGE_NAME:${{ steps.tag.outputs.tag }}
+  
+  integration-tests:
     needs: build
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup .NET 9 SDK
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '9.0.301'
 
-      - name: Install Make
-        run: sudo apt-get update && sudo apt-get install -y make
+      - name: Inject IMAGE_TAG into .env file
+        run: echo "IMAGE_TAG=${{ needs.build.outputs.image_tag }}" >> .env
 
-      - name: Restore dependencies
-        working-directory: ./src/nasa-server
-        run: dotnet restore
+      - name: Restore and Build
+        run: |
+          dotnet restore ./src/nasa-server/nasa-server.sln
+          dotnet build ./src/nasa-server/nasa-server.sln --configuration Release --no-restore
 
-      - name: Install ReportGenerator
-        run: dotnet tool install -g dotnet-reportgenerator-globaltool
+      - name: Start API
+        run: make integration_tests_up IMAGE_TAG=${{ needs.build.outputs.image_tag }}
 
-      - name: Add .NET tools to PATH
-        run: echo "${HOME}/.dotnet/tools" >> $GITHUB_PATH
+      - name: Run Integration Tests
+        run: make test CATEGORY=Integration
 
-      - name: Run unit tests with coverage via Makefile
-        run: make coverage
-
-      - name: Append coverage summary to GitHub
+      - name: Stop API
         if: always()
-        run: cat ./TestResults/CoverageReport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
-
-      - name: Upload full coverage report as artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: ./TestResults/CoverageReport        
+        run: make integration_tests_down
