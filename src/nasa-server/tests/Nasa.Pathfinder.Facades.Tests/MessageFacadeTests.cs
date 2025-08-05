@@ -31,6 +31,16 @@ public class MessageFacadeTests
     }
 
     [Test]
+    public async Task ReceiveMessageAsync_UnsupportedMessage_ShouldThrowsException()
+    {
+        await TestRunner<MessageFacade>
+            .Arrange(() => new MessageFacade(_repositoryMock.Object, _decoderServiceMock.Object,
+                _worldMapServiceMock.Object, _streamMock.Object))
+            .ActAsync(sut => sut.ReceiveMessageAsync(new BotMessage()))
+            .ThenAssertThrowsAsync<MessageFacade, InvalidCastException>();
+    }
+    
+    [Test]
     public async Task ReceiveMessageAsync_PositionReachable_ShouldMoveNext()
     {
         const string input = "FRFFL";
