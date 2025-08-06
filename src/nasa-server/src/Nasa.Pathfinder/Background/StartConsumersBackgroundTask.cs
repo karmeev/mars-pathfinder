@@ -1,12 +1,16 @@
 using Nasa.Pathfinder.Hubs;
+using Nasa.Pathfinder.Services.Contracts;
 
 namespace Nasa.Pathfinder.Background;
 
-public class StartMessageHubBackgroundTask(MessageHub hub) : IHostedService
+public class StartConsumersBackgroundTask(
+    IBotProcessorService processor,
+    MessageHub hub) : IHostedService
 {
     public Task StartAsync(CancellationToken cancellationToken)
     {
         hub.Start();
+        processor.RunConsumers();
         return Task.CompletedTask;
     }
 

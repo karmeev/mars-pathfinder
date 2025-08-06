@@ -1,7 +1,5 @@
 namespace Nasa.Pathfinder.Domain.Interactions;
 
-public record BotCommand(IReadOnlyList<IOperatorCommand> OperatorCommands);
-
 public interface IOperatorCommand { }
 
 public record UnknownCommand : IOperatorCommand { }

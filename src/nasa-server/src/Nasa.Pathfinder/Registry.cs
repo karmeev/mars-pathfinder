@@ -20,7 +20,7 @@ public static class Registry
 
         services.AddOptions();
         
-        services.AddHostedService<StartMessageHubBackgroundTask>();
+        services.AddHostedService<StartConsumersBackgroundTask>();
         services.AddHostedService<MigrationBackgroundTask>();
         services.AddGrpc(options =>
         {

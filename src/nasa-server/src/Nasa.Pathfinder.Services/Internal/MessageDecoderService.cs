@@ -10,7 +10,7 @@ internal class MessageDecoderService : IMessageDecoderService
         throw new NotImplementedException();
     }
 
-    public BotCommand DecodeOperatorMessage(string text)
+    public IReadOnlyList<IOperatorCommand> DecodeOperatorMessage(string text)
     {
         throw new NotImplementedException();
     }
