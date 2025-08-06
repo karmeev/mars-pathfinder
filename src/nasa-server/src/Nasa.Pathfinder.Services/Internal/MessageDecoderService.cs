@@ -5,6 +5,13 @@ namespace Nasa.Pathfinder.Services.Internal;
 
 internal class MessageDecoderService : IMessageDecoderService
 {
+    private readonly Dictionary<string, IOperatorCommand> _commands = new()
+    {
+        { OperatorCommand.GetShorthand<MoveFront>(), new MoveFront() },
+        { OperatorCommand.GetShorthand<MoveRight>(), new MoveRight() },
+        { OperatorCommand.GetShorthand<MoveLeft>(), new MoveLeft() }
+    };
+
     public string EncodeBotMessage(Position position, bool isLost, bool isSave)
     {
         throw new NotImplementedException();
@@ -12,6 +19,25 @@ internal class MessageDecoderService : IMessageDecoderService
 
     public IReadOnlyList<IOperatorCommand> DecodeOperatorMessage(string text)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrWhiteSpace(text) || text.Length > 100)
+        {
+            throw new InvalidOperationException();
+        }
+        
+        var commands = new List<IOperatorCommand>();
+        var symbols = text.Select(c => c.ToString()).ToArray();
+        foreach (var input in symbols)
+        {
+            if (_commands.TryGetValue(input, out var command))
+            {
+                commands.Add(command);
+            }
+            else
+            {
+                commands.Add(new UnknownCommand());
+            }
+        }
+        
+        return commands;
     }
 }

@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\Nasa.Pathfinder.Services\Nasa.Pathfinder.Services.csproj" />
+      <ProjectReference Include="..\Nasa.Pathfinder.Tests\Nasa.Pathfinder.Tests.csproj" />
+    </ItemGroup>
+
+</Project>

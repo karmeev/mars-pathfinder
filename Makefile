@@ -6,6 +6,7 @@ INTEGRATION_TESTS=./tests/integration
 
 UNIT_TEST_PROJECTS := \
     Nasa.Pathfinder.Facades.Tests/Nasa.Pathfinder.Facades.Tests.csproj \
+    Nasa.Pathfinder.Services.Tests/Nasa.Pathfinder.Services.Tests.csproj \
     
 INTEGRATION_TEST_PROJECTS := \
     Nasa.IntegrationTests.Pathfinder/Nasa.IntegrationTests.Pathfinder.csproj \
