@@ -4,9 +4,9 @@ using Nasa.Dashboard.Clients.Contracts;
 using Nasa.Dashboard.Clients.Internal.Pathfinder;
 using Pathfinder.Proto;
 
-namespace Nasa.Dashboard.Clients.Internal;
+namespace Nasa.Dashboard.Clients;
 
-internal class ClientsModule : Module
+public class ClientsModule : Module
 {
     protected override void Load(ContainerBuilder builder)
     {

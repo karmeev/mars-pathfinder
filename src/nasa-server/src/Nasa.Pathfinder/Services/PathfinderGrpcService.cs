@@ -4,13 +4,11 @@ using Nasa.Pathfinder.Domain.Messages;
 using Nasa.Pathfinder.Facades.Contracts;
 using Nasa.Pathfinder.Facades.Contracts.Exceptions;
 using Nasa.Pathfinder.Hubs;
-using Nasa.Pathfinder.Tmp;
 using Pathfinder.Messages;
 
 namespace Nasa.Pathfinder.Services;
 
 public class PathfinderGrpcService(
-    BotStorage storage,
     ILogger<PathfinderGrpcService> logger,
     MessageHub hub,
     IBotFacade botFacade, 
@@ -39,6 +37,8 @@ public class PathfinderGrpcService(
                 Status = bot.Status.ToString(),
             });
         }
+        
+        logger.LogInformation("GetBots: {GetBots}", response.Bots.Select(b => b.Id).ToList());
 
         return response;
     }
@@ -48,7 +48,6 @@ public class PathfinderGrpcService(
         try
         {
             var bot = await botFacade.SelectBotAsync(request.BotId, context.CancellationToken);
-            
             return new SelectBotResponse
             {
                 Bot = new Bot
@@ -61,7 +60,7 @@ public class PathfinderGrpcService(
         }
         catch (BotAlreadyAcquiredException e)
         {
-            return BadRequest<SelectBotResponse>("Bot already acquired");
+            return InvalidArgument<SelectBotResponse>("Bot already acquired");
         }
     }
 
@@ -70,7 +69,6 @@ public class PathfinderGrpcService(
         try
         {
             var bot = await botFacade.ResetBotAsync(request.BotId, context.CancellationToken);
-            
             var response = new ResetBotResponse
             {
                 Bot = new Bot
@@ -84,7 +82,7 @@ public class PathfinderGrpcService(
         }
         catch (BotAlreadyReleasedException e)
         {
-            return BadRequest<ResetBotResponse>("Bot already released");
+            return InvalidArgument<ResetBotResponse>("Bot already released");
         }
     }
 
@@ -111,19 +109,19 @@ public class PathfinderGrpcService(
         }
         catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
         {
-            Console.WriteLine($"Client {clientId} disconnected intentionally.");
+            logger.LogError("completed; Client {clientId} disconnected intentionally.", clientId);
         }
         catch (IOException ex)
         {
-            Console.WriteLine($"[WARN] Client {clientId} stream aborted: {ex.Message}");
+            logger.LogWarning("completed; Client {clientId} stream aborted: {exceptionMessage}", clientId, ex.Message);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[ERROR] Client {clientId} error: {ex}");
+            logger.LogError("completed; Client {clientId} stream aborted: {exceptionMessage}", clientId, ex.Message);
         }
         finally
         {
-            Console.WriteLine($"Client {clientId} cleanup done.");
+            logger.LogInformation("completed; Client {clientId} cleanup done.", clientId);
             hub.Disconnect(clientId);
         }
     }

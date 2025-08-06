@@ -4,9 +4,9 @@ using Nasa.Dashboard.View.Internal.Core;
 using Nasa.Dashboard.View.Internal.Views;
 using Nasa.Dashboard.View.Internal.Views.Engine;
 
-namespace Nasa.Dashboard.View.Internal;
+namespace Nasa.Dashboard.View;
 
-internal class ViewModule : Module
+public class ViewModule : Module
 {
     protected override void Load(ContainerBuilder builder)
     {

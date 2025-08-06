@@ -1,4 +1,3 @@
-using ErrorOr;
 using Nasa.Pathfinder.Data.Contracts.Exceptions;
 using Nasa.Pathfinder.Data.Contracts.Repositories;
 using Nasa.Pathfinder.Domain.Bots;

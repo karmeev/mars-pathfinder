@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Autofac;
+using Nasa.Dashboard.View;
 using Nasa.Dashboard.View.Contracts;
 
 namespace Nasa.Dashboard.Internal;
@@ -10,7 +11,7 @@ internal class NasaApp
 
     public void InitializeViews(ILifetimeScope scope)
     {
-        _navigator = View.Registry.InitializeViews(scope);
+        _navigator = ViewInitializer.Initialize(scope);
     }
 
     public void Run()

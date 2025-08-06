@@ -20,10 +20,15 @@ internal class BotsMiddleware(IDispatcher dispatcher, IBotsService service)
                 dispatcher.Dispatch(new SelectBotActionResult(bot));
                 break;
             case ResetSelectedBotAction resetSelectedBotAction:
-                //TODO: if resetting is not successful what's next?
-                await service.ResetBotAsync(resetSelectedBotAction.Bot);
-                dispatcher.Dispatch(new ResetSelectedBotActionResult(resetSelectedBotAction.Bot));
-                dispatcher.Dispatch(new CleanMessages());
+                try
+                {
+                    await service.ResetBotAsync(resetSelectedBotAction.Bot);
+                }
+                finally
+                {
+                    dispatcher.Dispatch(new ResetSelectedBotActionResult(resetSelectedBotAction.Bot));
+                    dispatcher.Dispatch(new CleanMessages());
+                }
                 break;
         }
     }
