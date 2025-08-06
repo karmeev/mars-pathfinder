@@ -30,3 +30,9 @@ public record DeadCommand(
     string BotId,
     Position DesiredPosition,
     Guid CorrelationId = default) : IBotCommand;
+
+public record InvalidCommand(
+    string ClientId,
+    string BotId,
+    string Message,
+    Guid CorrelationId = default) : IBotCommand;    

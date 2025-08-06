@@ -18,5 +18,7 @@ public static class Registry
         builder.RegisterType<BotWalkerConsumer>().As<IBotConsumer<WalkCommand>>();
         builder.RegisterType<BotDeadWalkerConsumer>().As<IBotConsumer<DeadCommand>>();
         builder.RegisterType<BotStandConsumer>().As<IBotConsumer<StandCommand>>();
+        builder.RegisterType<BotInvalidCommandConsumer>().As<IBotConsumer<InvalidCommand>>();
+        builder.RegisterType<BotConsumer>().As<IBotConsumer<MoveCommand>>();
     }
 }

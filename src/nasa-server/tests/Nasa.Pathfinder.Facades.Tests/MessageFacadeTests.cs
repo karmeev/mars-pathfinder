@@ -1,13 +1,10 @@
 using Bogus;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Moq;
 using Nasa.Pathfinder.Data.Contracts.Repositories;
 using Nasa.Pathfinder.Domain.Bots;
 using Nasa.Pathfinder.Domain.Interactions;
 using Nasa.Pathfinder.Domain.Messages;
 using Nasa.Pathfinder.Facades.Internal;
-using Nasa.Pathfinder.Infrastructure.Contracts.Grpc;
-using Nasa.Pathfinder.Infrastructure.Contracts.Grpc.Requests;
 using Nasa.Pathfinder.Services.Contracts;
 using Nasa.Pathfinder.Tests;
 
@@ -111,7 +108,7 @@ public class MessageFacadeTests
             .ThenAssertAsync(() =>
             {
                 _processorServiceMock.Verify(x => 
-                    x.RouteAsync(It.IsAny<MoveCommand>(), It.IsAny<CancellationToken>()),
+                    x.Publish(It.IsAny<MoveCommand>()),
                     Times.Once);
             });
     }

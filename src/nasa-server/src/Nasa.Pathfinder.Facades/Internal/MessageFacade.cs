@@ -14,10 +14,25 @@ internal class MessageFacade(
 {
     public async Task ReceiveMessageAsync(IMessage message, CancellationToken ct = default)
     {
+        var correlationId = Guid.CreateVersion7();
+        
         if (message is not OperatorMessage operatorMessage)
             throw new InvalidCastException();
         
-        var commands = messageDecoder.DecodeOperatorMessage(operatorMessage.Text);
+        IReadOnlyList<IOperatorCommand> commands;
+
+        try
+        {
+            commands = messageDecoder.DecodeOperatorMessage(operatorMessage.Text);
+            if (commands.Any(x => x is UnknownCommand))
+                throw new InvalidOperationException("Message has a unknown command!");
+        }
+        catch (InvalidOperationException ex)
+        {
+            processor.Publish(new InvalidCommand(operatorMessage.ClientId, operatorMessage.BotId, ex.Message, 
+                correlationId));
+            return;
+        }
         
         var bot = await repository.GetAsync(operatorMessage.BotId, ct);
 
@@ -26,7 +41,7 @@ internal class MessageFacade(
         var funerals = await worldMap.GetFuneralsAsync(ct);
         var isTrap = funerals.Contains(desiredPosition);
         
-        await processor.RouteAsync(new MoveCommand(operatorMessage.ClientId, bot, desiredPosition, isTrap, 
-            Guid.CreateVersion7()), ct);
+        processor.Publish(new MoveCommand(operatorMessage.ClientId, bot, desiredPosition, isTrap, 
+            correlationId));
     }
 }

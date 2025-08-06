@@ -5,5 +5,5 @@ namespace Nasa.Pathfinder.Services.Contracts;
 public interface IBotProcessorService
 {
     void RunConsumers();
-    Task RouteAsync(IBotCommand command, CancellationToken ct = default);
+    void Publish(IBotCommand command);
 }

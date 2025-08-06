@@ -21,7 +21,7 @@ internal class MessageDecoderService : IMessageDecoderService
     {
         if (string.IsNullOrWhiteSpace(text) || text.Length > 100)
         {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException("Message is too long or too short for command!");
         }
         
         var commands = new List<IOperatorCommand>();
