@@ -15,9 +15,65 @@ internal class WorldMapService : IWorldMapService
         throw new NotImplementedException();
     }
 
-    public Position CalculateDesiredPosition(Position currentPosition, IEnumerable<IOperatorCommand> commands)
+    public Position CalculateDesiredPosition(Position currentPosition, Stack<IOperatorCommand> commands)
     {
-        throw new NotImplementedException();
+        foreach (var command in commands)
+        {
+            currentPosition = Move(currentPosition, command);
+        }
+        
+        return currentPosition;
+        
+        static Position Move(Position position, IOperatorCommand command)
+        {
+            if (command is MoveRight or MoveLeft)
+            {
+                position.Direction = Rotate(command, position.Direction);
+            }
+
+            switch (position.Direction)
+            {
+                case Direction.N:
+                    position.Y += command.Steps;
+                    break;
+                case Direction.E:
+                    position.X += command.Steps;
+                    break;
+                case Direction.S:
+                    position.Y -= command.Steps;
+                    break;
+                case Direction.W:
+                    position.X -= command.Steps;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
+            return position;
+        }
+        
+        static Direction Rotate(IOperatorCommand command, Direction direction)
+        {
+            return command switch
+            {
+                MoveLeft _ => direction switch
+                {
+                    Direction.N => Direction.W,
+                    Direction.W => Direction.S,
+                    Direction.S => Direction.E,
+                    Direction.E => Direction.N,
+                    _ => throw new ArgumentOutOfRangeException()
+                },
+                MoveRight _ => direction switch
+                {
+                    Direction.N => Direction.E,
+                    Direction.E => Direction.S,
+                    Direction.S => Direction.W,
+                    Direction.W => Direction.N,
+                    _ => throw new ArgumentOutOfRangeException()
+                }
+            };
+        }
     }
 
     public Task<bool> TryReachPosition(Position position, CancellationToken ct = default)

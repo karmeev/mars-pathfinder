@@ -19,7 +19,7 @@ internal class MessageFacade(
         if (message is not OperatorMessage operatorMessage)
             throw new InvalidCastException();
         
-        IReadOnlyList<IOperatorCommand> commands;
+        Stack<IOperatorCommand> commands;
 
         try
         {
@@ -38,10 +38,6 @@ internal class MessageFacade(
 
         var desiredPosition = worldMap.CalculateDesiredPosition(bot.Position, commands);
         
-        var funerals = await worldMap.GetFuneralsAsync(ct);
-        var isTrap = funerals.Contains(desiredPosition);
-        
-        processor.Publish(new MoveCommand(operatorMessage.ClientId, bot, desiredPosition, isTrap, 
-            correlationId));
+        processor.Publish(new MoveCommand(operatorMessage.ClientId, bot, desiredPosition, correlationId));
     }
 }

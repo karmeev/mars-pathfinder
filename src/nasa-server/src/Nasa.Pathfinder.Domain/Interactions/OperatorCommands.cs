@@ -14,13 +14,13 @@ public record UnknownCommand : IOperatorCommand
 
 public record MoveRight : IOperatorCommand
 {
-    public int Steps => 1;
+    public int Steps => 0;
     public string Shorthand => "R";
 }
 
 public record MoveLeft : IOperatorCommand
 {
-    public int Steps => 1;
+    public int Steps => 0;
     public string Shorthand => "L";
 }
 

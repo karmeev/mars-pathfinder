@@ -47,16 +47,16 @@ public class MessageFacadeTests
         await TestRunner<MessageFacade>
             .Arrange(() =>
             {
+                var commands = new Stack<IOperatorCommand>();
+                commands.Push(new MoveFront());
+                commands.Push(new MoveRight());
+                commands.Push(new MoveFront());
+                commands.Push(new MoveFront());
+                commands.Push(new MoveLeft());
+                
                 _decoderServiceMock.Setup(x => x.DecodeOperatorMessage(
                         It.Is<string>(i => i.Equals(input))))
-                    .Returns(new List<IOperatorCommand>
-                    {
-                        new MoveFront(),
-                        new MoveRight(),
-                        new MoveFront(),
-                        new MoveFront(),
-                        new MoveLeft()
-                    });
+                    .Returns(commands);
 
                 _repositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(new Bot
@@ -73,28 +73,13 @@ public class MessageFacadeTests
                     });
 
                 _worldMapServiceMock.Setup(x => x.CalculateDesiredPosition(It.IsAny<Position>(),
-                    It.IsAny<IEnumerable<IOperatorCommand>>()))
+                    It.IsAny<Stack<IOperatorCommand>>()))
                     .Returns(new Position
                     {
                         X = 4,
                         Y = 3,
                         Direction = Direction.N
                     });
-
-                //We don't have a funerals now
-                _worldMapServiceMock.Setup(x => x.GetFuneralsAsync(It.IsAny<CancellationToken>()))
-                    .ReturnsAsync([]);
-
-                _worldMapServiceMock.Setup(x =>
-                    x.TryReachPosition(It.IsAny<Position>(), It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(true);
-
-                _decoderServiceMock.Setup(x =>
-                        x.EncodeBotMessage(
-                            It.IsAny<Position>(), 
-                            It.Is<bool>(b => b == false), 
-                            It.Is<bool>(b => b == false)))
-                    .Returns("4 3 N");
                 
                 return new MessageFacade(_repositoryMock.Object, _decoderServiceMock.Object, 
                     _worldMapServiceMock.Object, _processorServiceMock.Object);

@@ -17,9 +17,9 @@ public interface IMessageDecoderService
     /// Decodes a raw operator input string into a list of executable commands.
     /// </summary>
     /// <param name="text">The operator's input command string.</param>
-    /// <returns>A read-only list of parsed operator commands.</returns>
+    /// <returns>A parsed operator commands.</returns>
     /// <exception cref="InvalidOperationException">
     /// Thrown when the input is empty or exceeds 100 characters.
     /// </exception>
-    IReadOnlyList<IOperatorCommand> DecodeOperatorMessage(string text);
+    Stack<IOperatorCommand> DecodeOperatorMessage(string text);
 }

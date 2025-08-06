@@ -6,6 +6,6 @@ public interface IWorldMapService
 {
     Task ChangeBotPositionAsync(Position position, CancellationToken ct = default);
     Task<List<Position>> GetFuneralsAsync(CancellationToken ct = default);
-    Position CalculateDesiredPosition(Position currentPosition, IEnumerable<IOperatorCommand> commands);
+    Position CalculateDesiredPosition(Position currentPosition, Stack<IOperatorCommand> commands);
     Task<bool> TryReachPosition(Position position, CancellationToken ct = default);
 }

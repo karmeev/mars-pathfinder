@@ -11,7 +11,6 @@ public record MoveCommand(
     string ClientId,
     Bot Bot,
     Position DesiredPosition,
-    bool HasFunerals,
     Guid CorrelationId = default) : IBotCommand;
 
 public record WalkCommand(

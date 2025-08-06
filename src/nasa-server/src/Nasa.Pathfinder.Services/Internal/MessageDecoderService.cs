@@ -17,26 +17,28 @@ internal class MessageDecoderService : IMessageDecoderService
         throw new NotImplementedException();
     }
 
-    public IReadOnlyList<IOperatorCommand> DecodeOperatorMessage(string text)
+    public Stack<IOperatorCommand> DecodeOperatorMessage(string text)
     {
         if (string.IsNullOrWhiteSpace(text) || text.Length > 100)
         {
             throw new InvalidOperationException("Message is too long or too short for command!");
         }
         
-        var commands = new List<IOperatorCommand>();
-        var symbols = text.Select(c => c.ToString()).ToArray();
+        var symbols = text.Reverse().Select(c => c.ToString()).ToArray();
+
+        var commands = new Stack<IOperatorCommand>();
         foreach (var input in symbols)
         {
             if (_commands.TryGetValue(input, out var command))
             {
-                commands.Add(command);
+                commands.Push(command);
             }
             else
             {
-                commands.Add(new UnknownCommand());
+                commands.Push(new UnknownCommand());
             }
         }
+        
         
         return commands;
     }

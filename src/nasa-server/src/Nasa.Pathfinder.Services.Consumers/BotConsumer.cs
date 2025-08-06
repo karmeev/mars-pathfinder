@@ -10,8 +10,11 @@ public class BotConsumer(
 {
     public async Task Consume(MoveCommand command, CancellationToken ct = default)
     {
+        var funerals = await worldMap.GetFuneralsAsync(ct);
+        var isTrap = funerals.Contains(command.DesiredPosition);
+        
         var isAccessible = await worldMap.TryReachPosition(command.DesiredPosition, ct);
-        if (command.HasFunerals && isAccessible)
+        if (isTrap && isAccessible)
         {
             var stand = new StandCommand(command.ClientId, command.Bot.Id, command.CorrelationId);
             processor.Publish(stand);

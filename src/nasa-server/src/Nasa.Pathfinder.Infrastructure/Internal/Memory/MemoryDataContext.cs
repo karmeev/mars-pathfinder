@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using ErrorOr;
 using Microsoft.Extensions.Caching.Memory;
 using Nasa.Pathfinder.Domain.Core;
@@ -6,31 +7,32 @@ using Nasa.Pathfinder.Infrastructure.Contracts.Exceptions;
 
 namespace Nasa.Pathfinder.Infrastructure.Internal.Memory;
 
-internal class MemoryDataContext(IMemoryCache cache) : IMemoryDataContext
+internal class MemoryDataContext(IMemoryCache cache) : IMemoryDataContext, IDisposable
 {
     private readonly HashSet<string> _keys = [];
-    private readonly ReaderWriterLockSlim _lock = new(LockRecursionPolicy.NoRecursion);
+    private readonly ConcurrentDictionary<string, object> _entityLocks = new();
 
-    public async Task PushAsync<T>(T entry, CancellationToken ct = default) where T : class, IEntity
+    public Task PushAsync<T>(T entry, CancellationToken ct = default) where T : class, IEntity
     {
-        await Push(entry);
-    }
-    
-    private ValueTask Push<T>(T entry) where T : class, IEntity
-    {
-        var id = GetInternalId<T>(entry.Id);
-        cache.Set(id, entry);
-        _keys.Add(id);
-        return ValueTask.CompletedTask;
+        var lockObj = GetEntityLock<T>(entry.Id);
+        lock (lockObj)
+        {
+            var id = GetInternalId<T>(entry.Id);
+            cache.Set(id, entry);
+            _keys.Add(id);
+        }
+        
+        return Task.CompletedTask;
     }
 
     public Task<ErrorOr<T>> UpdateAsync<T>(T entry, CancellationToken ct = default) where T : class, IEntity
     {
-        _lock.EnterWriteLock();
-        var result = Update(entry);
-        _lock.ExitWriteLock();
-        
-        return Task.FromResult(result);
+        var lockObj = GetEntityLock<T>(entry.Id);
+        lock (lockObj)
+        {
+            var result = Update(entry);
+            return Task.FromResult(result);
+        }
     }
     
     private ErrorOr<T> Update<T>(T entry) where T : class, IEntity
@@ -49,10 +51,12 @@ internal class MemoryDataContext(IMemoryCache cache) : IMemoryDataContext
 
     public Task<T> GetAsync<T>(string id, CancellationToken ct = default) where T : class, IEntity
     {
-        _lock.EnterReadLock();
-        var result = Get<T>(id).Value;
-        _lock.ExitReadLock();
-        return Task.FromResult(result);
+        var lockObj = GetEntityLock<T>(id);
+        lock (lockObj)
+        {
+            var result = Get<T>(id).Value;
+            return Task.FromResult(result);
+        }
     }
 
     private ErrorOr<T> Get<T>(string id)
@@ -88,5 +92,16 @@ internal class MemoryDataContext(IMemoryCache cache) : IMemoryDataContext
     private string GetInternalId<T>(string publicId)
     {
         return $"{typeof(T).Name}:{publicId}";
+    }
+    
+    private object GetEntityLock<T>(string id)
+    {
+        var key = GetInternalId<T>(id);
+        return _entityLocks.GetOrAdd(key, _ => new object());
+    }
+
+    public void Dispose()
+    {
+        cache?.Dispose();
     }
 }

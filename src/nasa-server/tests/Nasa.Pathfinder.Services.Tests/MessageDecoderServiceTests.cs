@@ -13,7 +13,7 @@ public class MessageDecoderServiceTests
     public void DecodeOperatorMessage_ProvidedTextWithInstruction_ShouldReturnsCommands()
     {
         const string input = "FRFFL";
-        TestRunner<MessageDecoderService, IReadOnlyList<IOperatorCommand>>
+        TestRunner<MessageDecoderService, Stack<IOperatorCommand>>
             .Arrange(() => new MessageDecoderService())
             .Act(sut => sut.DecodeOperatorMessage(input))
             .Assert(result =>
@@ -28,7 +28,7 @@ public class MessageDecoderServiceTests
     public void DecodeOperatorMessage_ProvidedIncorrectText_ShouldReturnUnknownCommands()
     {
         const string input = "gHrqRRRLFFF";
-        TestRunner<MessageDecoderService, IReadOnlyList<IOperatorCommand>>
+        TestRunner<MessageDecoderService, Stack<IOperatorCommand>>
             .Arrange(() => new MessageDecoderService())
             .Act(sut => sut.DecodeOperatorMessage(input))
             .Assert(result =>
@@ -62,7 +62,7 @@ public class MessageDecoderServiceTests
             });
     }
 
-    private string ConvertToString(IReadOnlyList<IOperatorCommand> commands)
+    private string ConvertToString(Stack<IOperatorCommand> commands)
     {
         string output = string.Empty;
         foreach (var command in commands)
