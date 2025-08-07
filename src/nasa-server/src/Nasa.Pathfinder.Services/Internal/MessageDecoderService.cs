@@ -1,4 +1,5 @@
 using Nasa.Pathfinder.Domain.Interactions;
+using Nasa.Pathfinder.Domain.World;
 using Nasa.Pathfinder.Services.Contracts;
 
 namespace Nasa.Pathfinder.Services.Internal;

@@ -66,7 +66,8 @@ public class MessageHub(Channel<SendMessageRequest> channel)
                 BotId = message.BotId,
                 Message = message.Message,
                 IsLost = message.IsLost,
-                IsInvalidCommand = message.IsInvalidCommand
+                IsInvalidCommand = message.IsInvalidCommand,
+                LastWords = message.LastWords
             };
 
             await stream.WriteAsync(reply);

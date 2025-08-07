@@ -9,8 +9,8 @@ internal class BotInvalidCommandConsumer(IOperatorProcessor processor) : IBotCon
 {
     public Task Consume(InvalidCommand command, CancellationToken ct = default)
     {
-        var request = new SendMessageRequest(command.BotId, command.ClientId, command.Message, true,
-            true);
+        var request = new SendMessageRequest(command.ClientId, command.BotId, command.Message, true,
+            true, string.Empty);
 
         processor.SendMessage(request);
 

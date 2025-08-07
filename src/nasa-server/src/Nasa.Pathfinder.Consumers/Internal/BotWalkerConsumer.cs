@@ -16,8 +16,8 @@ internal class BotWalkerConsumer(
     {
         await repository.ChangeBotPositionAsync(command.BotId, command.DesiredPosition, ct);
         var notificationText = messageDecoder.EncodeBotMessage(command.DesiredPosition, false);
-        var request = new SendMessageRequest(command.BotId, command.ClientId, notificationText, false,
-            false);
+        var request = new SendMessageRequest(command.ClientId, command.BotId, notificationText, false,
+            false, string.Empty);
         processor.SendMessage(request);
     }
 }

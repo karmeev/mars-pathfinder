@@ -1,4 +1,6 @@
 using Nasa.Pathfinder.Domain.Bots;
+using Nasa.Pathfinder.Domain.Entities.Bots;
+using Nasa.Pathfinder.Domain.World;
 
 namespace Nasa.Pathfinder.Domain.Interactions;
 
@@ -29,6 +31,8 @@ public record DeadCommand(
     string ClientId,
     string BotId,
     Position DesiredPosition,
+    string MapId,
+    string LastWords,
     Guid CorrelationId = default) : IBotCommand;
 
 public record InvalidCommand(

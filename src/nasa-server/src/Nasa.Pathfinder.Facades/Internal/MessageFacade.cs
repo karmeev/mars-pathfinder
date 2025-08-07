@@ -1,4 +1,5 @@
 using Nasa.Pathfinder.Data.Contracts.Repositories;
+using Nasa.Pathfinder.Domain.Entities.Bots;
 using Nasa.Pathfinder.Domain.Interactions;
 using Nasa.Pathfinder.Domain.Messages;
 using Nasa.Pathfinder.Facades.Contracts;
@@ -35,7 +36,7 @@ internal class MessageFacade(
             return;
         }
 
-        var bot = await repository.GetAsync(operatorMessage.BotId, ct);
+        var bot = await repository.TryGetAsync(operatorMessage.BotId, ct);
 
         var desiredPosition = worldMap.CalculateDesiredPosition(bot.Position, commands);
 

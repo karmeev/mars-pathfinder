@@ -1,14 +1,16 @@
+using ErrorOr;
 using Nasa.Pathfinder.Data.Contracts.Exceptions;
 using Nasa.Pathfinder.Data.Contracts.Repositories;
 using Nasa.Pathfinder.Domain.Bots;
-using Nasa.Pathfinder.Domain.Interactions;
+using Nasa.Pathfinder.Domain.Entities.Bots;
+using Nasa.Pathfinder.Domain.World;
 using Nasa.Pathfinder.Infrastructure.Contracts.DataContexts;
 
 namespace Nasa.Pathfinder.Data.Internal;
 
 internal class BotRepository(IDataContext dataContext) : IBotRepository
 {
-    public async Task<Bot> GetAsync(string botId, CancellationToken ct = default)
+    public async Task<Bot?> TryGetAsync(string botId, CancellationToken ct = default)
     {
         return await dataContext.GetAsync<Bot>(botId, ct);
     }
@@ -19,18 +21,22 @@ internal class BotRepository(IDataContext dataContext) : IBotRepository
         return bots;
     }
 
-    public async Task<Bot> ChangeBotStatusAsync(string botId, BotStatus status, CancellationToken ct = default)
+    public async Task<Bot?> ChangeBotStatusAsync(string botId, BotStatus status, CancellationToken ct = default)
     {
         await dataContext.AcquireAsync<Bot>(botId, ct);
         try
         {
-            var bot = await GetAsync(botId, ct);
+            var bot = await TryGetAsync(botId, ct);
+            
+            if (bot is null)
+                return DataException.ThrowIfIncorrectData<Bot>($"Bot is not exists");
+            
             if (bot.Status == status)
                 return DataException.ThrowIfIncorrectData<Bot>($"Bot already has status: {status}");
 
             bot.Status = status;
 
-            var result = await dataContext.UpdateAsync(bot, ct);
+            ErrorOr<Bot> result = await dataContext.UpdateAsync(bot, ct);
 
             if (result.IsError)
             {
@@ -53,7 +59,13 @@ internal class BotRepository(IDataContext dataContext) : IBotRepository
         await dataContext.AcquireAsync<Bot>(botId, ct);
         try
         {
-            var bot = await GetAsync(botId, ct);
+            var bot = await TryGetAsync(botId, ct);
+            if (bot is null)
+            {
+                DataException.ThrowIfIncorrectData("Bot is not exists");
+                return;
+            }
+            
             bot.Position = position;
             var result = await dataContext.UpdateAsync(bot, ct);
 

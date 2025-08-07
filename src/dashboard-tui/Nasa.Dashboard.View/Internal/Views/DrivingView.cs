@@ -79,7 +79,9 @@ internal class DrivingView(IViewFactory factory, IStore store) : IView
     {
         if (store.CurrentState.ControlPanelState.IsStreaming)
         {
-            AnsiConsole.MarkupLine($"[grey]Current position:[/] [bold]Disconnected[/]");
+            var position = store.CurrentState.BotState.SelectedBot.Position;
+            AnsiConsole.MarkupLine($"[grey]Current position:[/] " +
+                                   $"[bold]{position.X}[/] [bold]{position.Y}[/] [bold]{position.Direction}[/]");
         }
         
         AnsiConsole.MarkupLine("[underline]Chat:[/]");

@@ -10,7 +10,7 @@ namespace Nasa.Pathfinder.Infrastructure.Internal.Memory;
 internal class MemoryDataContext(IMemoryCache cache) : IMemoryDataContext, IDisposable
 {
     private readonly ConcurrentDictionary<string, object> _entityLocks = new();
-    private readonly HashSet<string> _keys = [];
+    private readonly Dictionary<string, Type> _types = new();
 
     public void Dispose()
     {
@@ -24,7 +24,7 @@ internal class MemoryDataContext(IMemoryCache cache) : IMemoryDataContext, IDisp
         {
             var id = GetInternalId<T>(entry.Id);
             cache.Set(id, entry);
-            _keys.Add(id);
+            _types.Add(id, entry.GetType());
         }
 
         return Task.CompletedTask;
@@ -40,13 +40,14 @@ internal class MemoryDataContext(IMemoryCache cache) : IMemoryDataContext, IDisp
         }
     }
 
-    public Task<T> GetAsync<T>(string id, CancellationToken ct = default) where T : class, IEntity
+    public Task<T?> GetAsync<T>(string id, CancellationToken ct = default) where T : class, IEntity
     {
         var lockObj = GetEntityLock<T>(id);
         lock (lockObj)
         {
-            var result = Get<T>(id).Value;
-            return Task.FromResult(result);
+            var result = Get<T>(id);
+            if (result.IsError) return null;
+            return Task.FromResult(result.Value);
         }
     }
 
@@ -103,9 +104,12 @@ internal class MemoryDataContext(IMemoryCache cache) : IMemoryDataContext, IDisp
     private ValueTask<List<T>> GetAll<T>(CancellationToken ct = default)
     {
         var result = new List<T>();
-        foreach (var key in _keys)
-            if (cache.TryGetValue(key, out var val))
+        var entityKeys = _types.Where(x => x.Value == typeof(T));
+        foreach (var key in entityKeys)
+        {
+            if (cache.TryGetValue(key.Key, out var val))
                 result.Add((T)val);
+        }
 
         return new ValueTask<List<T>>(result);
     }

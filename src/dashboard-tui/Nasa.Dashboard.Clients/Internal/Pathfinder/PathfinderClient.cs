@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Nasa.Dashboard.Clients.Contracts;
+using Nasa.Dashboard.Clients.Metadata;
 using Nasa.Dashboard.Model.Bots;
 using Nasa.Dashboard.Model.Messages;
 using Pathfinder.Messages;
@@ -44,7 +45,13 @@ internal class PathfinderClient(PathfinderService.PathfinderServiceClient grpcSe
         {
             Id = response.Bot.Id,
             Name = response.Bot.Name,
-            Status = System.Enum.Parse<BotStatus>(response.Bot.Status)
+            Status = System.Enum.Parse<BotStatus>(response.Bot.Status),
+            Position = new BotPosition
+            {
+                X = response.Bot.Position.X,
+                Y = response.Bot.Position.Y,
+                Direction = response.Bot.Position.Direction,
+            }
         };
     }
 
@@ -104,19 +111,18 @@ internal class PathfinderClient(PathfinderService.PathfinderServiceClient grpcSe
 
     private static IMessage ToMessage(SendMessageResponse response)
     {
-        // Example conversion. Customize as needed.
         return new BotMessage
         {
-            Text = response.Message,
-            //BotId = response.BotId,
+            Text = response.Message
         };
     }
 
-    private Metadata GetHeader()
+    private Grpc.Core.Metadata GetHeader()
     {
-        return new Metadata
+        return new Grpc.Core.Metadata
         {
-            { "TraceId", Activity.Current?.TraceId.ToString() }
+            { "clientId", ClientActivity.ClientId },
+            { "TraceId", Guid.NewGuid().ToString() }
         };
     }
 }

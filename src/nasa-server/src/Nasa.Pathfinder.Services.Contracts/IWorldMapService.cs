@@ -1,10 +1,11 @@
 using Nasa.Pathfinder.Domain.Interactions;
+using Nasa.Pathfinder.Domain.World;
 
 namespace Nasa.Pathfinder.Services.Contracts;
 
 public interface IWorldMapService
 {
-    Task<List<Position>> GetFuneralsAsync(CancellationToken ct = default);
     Position CalculateDesiredPosition(Position currentPosition, Stack<IOperatorCommand> commands);
-    Task<bool> TryReachPosition(Position position, CancellationToken ct = default);
+    Task<IPositionProject> TryReachPosition(string mapId, Position position, 
+        CancellationToken ct = default);
 }

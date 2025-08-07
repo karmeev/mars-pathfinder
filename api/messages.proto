@@ -36,6 +36,7 @@ message SendMessageResponse {
   string Message = 2;
   bool IsLost = 3;
   bool IsInvalidCommand = 4;
+  string LastWords = 5;
 }
 
 message Bot {

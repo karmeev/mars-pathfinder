@@ -1,5 +1,6 @@
 using Nasa.Pathfinder.Consumers.Contracts;
 using Nasa.Pathfinder.Domain.Interactions;
+using Nasa.Pathfinder.Domain.World;
 using Nasa.Pathfinder.Infrastructure.Contracts.Processors;
 using Nasa.Pathfinder.Services.Contracts;
 
@@ -11,21 +12,19 @@ internal class BotConsumer(
 {
     public async Task Consume(MoveCommand command, CancellationToken ct = default)
     {
-        var funerals = await worldMap.GetFuneralsAsync(ct);
-        var isTrap = funerals.Contains(command.DesiredPosition);
+        var project = await worldMap.TryReachPosition(command.Bot.MapId, command.DesiredPosition, ct);
 
-        var isAccessible = await worldMap.TryReachPosition(command.DesiredPosition, ct);
-        if (isTrap && isAccessible)
+        if (project is PositionNotChanged)
         {
             var stand = new StandCommand(command.ClientId, command.Bot.Id, command.Bot.Position, command.CorrelationId);
             processor.Publish(stand);
             return;
         }
 
-        if (!isAccessible)
+        if (project is PositionOutOfMap)
         {
-            var lost = new DeadCommand(command.ClientId, command.Bot.Id, command.DesiredPosition,
-                command.CorrelationId);
+            var lost = new DeadCommand(command.ClientId, command.Bot.Id, command.DesiredPosition, command.Bot.MapId,
+                command.Bot.LastWords, command.CorrelationId);
             processor.Publish(lost);
             return;
         }

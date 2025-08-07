@@ -14,5 +14,17 @@ public class Registry
             var memoryContext = c.Resolve<IMemoryDataContext>();
             return new BotRepository(memoryContext);
         }).As<IBotRepository>();
+        
+        builder.Register(c =>
+        {
+            var memoryContext = c.Resolve<IMemoryDataContext>();
+            return new MapRepository(memoryContext);
+        }).As<IMapRepository>();
+        
+        builder.Register(c =>
+        {
+            var memoryContext = c.Resolve<IMemoryDataContext>();
+            return new FuneralRepository(memoryContext);
+        }).As<IFuneralRepository>();
     }
 }

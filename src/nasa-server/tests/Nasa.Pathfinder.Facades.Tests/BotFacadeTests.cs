@@ -3,6 +3,7 @@ using Moq;
 using Nasa.Pathfinder.Data.Contracts.Exceptions;
 using Nasa.Pathfinder.Data.Contracts.Repositories;
 using Nasa.Pathfinder.Domain.Bots;
+using Nasa.Pathfinder.Domain.Entities.Bots;
 using Nasa.Pathfinder.Facades.Contracts.Exceptions;
 using Nasa.Pathfinder.Facades.Internal;
 using Nasa.Pathfinder.Tests;

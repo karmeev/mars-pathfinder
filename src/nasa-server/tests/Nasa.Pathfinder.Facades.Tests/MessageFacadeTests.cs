@@ -2,8 +2,10 @@ using Bogus;
 using Moq;
 using Nasa.Pathfinder.Data.Contracts.Repositories;
 using Nasa.Pathfinder.Domain.Bots;
+using Nasa.Pathfinder.Domain.Entities.Bots;
 using Nasa.Pathfinder.Domain.Interactions;
 using Nasa.Pathfinder.Domain.Messages;
+using Nasa.Pathfinder.Domain.World;
 using Nasa.Pathfinder.Facades.Internal;
 using Nasa.Pathfinder.Infrastructure.Contracts.Processors;
 using Nasa.Pathfinder.Services.Contracts;
@@ -59,7 +61,7 @@ public class MessageFacadeTests
                         It.Is<string>(i => i.Equals(input))))
                     .Returns(commands);
 
-                _repositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                _repositoryMock.Setup(x => x.TryGetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(new Bot
                     {
                         Id = botId,

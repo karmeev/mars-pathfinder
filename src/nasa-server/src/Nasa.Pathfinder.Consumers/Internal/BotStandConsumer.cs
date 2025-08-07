@@ -13,8 +13,8 @@ internal class BotStandConsumer(
     public async Task Consume(StandCommand command, CancellationToken ct = default)
     {
         var notificationText = messageDecoder.EncodeBotMessage(command.CurrentPosition, false);
-        var request = new SendMessageRequest(command.BotId, command.ClientId, notificationText, false,
-            false);
+        var request = new SendMessageRequest(command.ClientId, command.BotId, notificationText, false,
+            false, string.Empty);
         processor.SendMessage(request);
     }
 }

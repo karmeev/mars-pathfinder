@@ -10,7 +10,7 @@ public static class Response
         throw new RpcException(new Status(StatusCode.InvalidArgument, message));
     }
     
-    public static GetBotsResponse MapToGetBotsResponse(IEnumerable<Nasa.Pathfinder.Domain.Bots.Bot> bots)
+    public static GetBotsResponse MapToGetBotsResponse(IEnumerable<Domain.Entities.Bots.Bot> bots)
     {
         var response = new GetBotsResponse();
         foreach (var bot in bots)
@@ -30,7 +30,7 @@ public static class Response
         return response;
     }
     
-    public static SelectBotResponse MapToSelectBotResponse(Nasa.Pathfinder.Domain.Bots.Bot bot)
+    public static SelectBotResponse MapToSelectBotResponse(Domain.Entities.Bots.Bot bot)
     {
         return new SelectBotResponse
         {
@@ -38,12 +38,18 @@ public static class Response
             {
                 Id = bot.Id,
                 Name = bot.Name,
-                Status = bot.Status.ToString()
+                Status = bot.Status.ToString(),
+                Position = new Position
+                {
+                    X = bot.Position.X,
+                    Y = bot.Position.Y,
+                    Direction = bot.Position.Direction.ToString(),
+                }
             }
         };
     }
     
-    public static ResetBotResponse MapToResetBotResponse(Nasa.Pathfinder.Domain.Bots.Bot bot)
+    public static ResetBotResponse MapToResetBotResponse(Domain.Entities.Bots.Bot bot)
     {
         var response = new ResetBotResponse
         {
@@ -51,7 +57,13 @@ public static class Response
             {
                 Id = bot.Id,
                 Name = bot.Name,
-                Status = bot.Status.ToString()
+                Status = bot.Status.ToString(),
+                Position = new Position
+                {
+                    X = bot.Position.X,
+                    Y = bot.Position.Y,
+                    Direction = bot.Position.Direction.ToString(),
+                }
             }
         };
         return response;

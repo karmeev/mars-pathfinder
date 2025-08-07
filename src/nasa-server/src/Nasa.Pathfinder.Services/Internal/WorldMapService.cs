@@ -1,16 +1,15 @@
 using Nasa.Pathfinder.Data.Contracts.Repositories;
+using Nasa.Pathfinder.Domain.Entities.World;
 using Nasa.Pathfinder.Domain.Interactions;
+using Nasa.Pathfinder.Domain.World;
 using Nasa.Pathfinder.Services.Contracts;
 
 namespace Nasa.Pathfinder.Services.Internal;
 
-internal class WorldMapService(IBotRepository repository) : IWorldMapService
+internal class WorldMapService(
+    IMapRepository mapRepository,
+    IFuneralRepository funeralRepository) : IWorldMapService
 {
-    public Task<List<Position>> GetFuneralsAsync(CancellationToken ct = default)
-    {
-        throw new NotImplementedException();
-    }
-
     public Position CalculateDesiredPosition(Position currentPosition, Stack<IOperatorCommand> commands)
     {
         foreach (var command in commands) currentPosition = Move(currentPosition, command);
@@ -66,8 +65,30 @@ internal class WorldMapService(IBotRepository repository) : IWorldMapService
         }
     }
 
-    public Task<bool> TryReachPosition(Position position, CancellationToken ct = default)
+    public async Task<IPositionProject> TryReachPosition(string mapId, Position position, 
+        CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        var funerals = await funeralRepository.GetFuneralsAsync(mapId, ct);
+        var isTrap = funerals.Any(x => x.Value == position);
+        
+        var isOutOfMap = false;
+        var mapInfo = await mapRepository.TryGetAsync(mapId, ct);
+
+        if (position.X > mapInfo.SizeX || position.Y > mapInfo.SizeY)
+        {
+            isOutOfMap = true;
+        }
+        
+        if (isTrap && !isOutOfMap)
+        {
+            return PositionProject.NotChanged();
+        }
+
+        if (isOutOfMap)
+        {
+            return PositionProject.OutOfMap();
+        }
+
+        return PositionProject.Changed();
     }
 }

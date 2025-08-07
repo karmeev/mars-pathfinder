@@ -1,4 +1,4 @@
-namespace Nasa.Pathfinder.Domain.Interactions;
+namespace Nasa.Pathfinder.Domain.World;
 
 public enum Direction
 {

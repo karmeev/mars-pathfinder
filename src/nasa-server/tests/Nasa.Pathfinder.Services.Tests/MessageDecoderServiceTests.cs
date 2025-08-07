@@ -1,5 +1,6 @@
 using Bogus;
 using Nasa.Pathfinder.Domain.Interactions;
+using Nasa.Pathfinder.Domain.World;
 using Nasa.Pathfinder.Services.Internal;
 using Nasa.Pathfinder.Tests;
 using NUnit.Framework;

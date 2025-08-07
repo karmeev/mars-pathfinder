@@ -1,6 +1,7 @@
 using Moq;
 using Nasa.Pathfinder.Data.Contracts.Repositories;
 using Nasa.Pathfinder.Domain.Interactions;
+using Nasa.Pathfinder.Domain.World;
 using Nasa.Pathfinder.Services.Internal;
 using Nasa.Pathfinder.Tests;
 using NUnit.Framework;
@@ -13,16 +14,18 @@ public class WorldMapServiceTests
     [SetUp]
     public void Setup()
     {
-        _repository = new Mock<IBotRepository>();
+        _mockMapRepository = new Mock<IMapRepository>();
+        _mockFuneralRepository = new Mock<IFuneralRepository>();
     }
 
-    private Mock<IBotRepository> _repository;
+    private Mock<IMapRepository> _mockMapRepository;
+    private Mock<IFuneralRepository> _mockFuneralRepository;
 
     [Test]
     public void CalculateDesiredPosition_WhenWeGotListOfCommands_ShouldReturnsDestination()
     {
         TestRunner<WorldMapService, Position>
-            .Arrange(() => new WorldMapService(_repository.Object))
+            .Arrange(() => new WorldMapService(_mockMapRepository.Object, _mockFuneralRepository.Object))
             .Act(sut =>
             {
                 var currentPosition = new Position
@@ -59,7 +62,7 @@ public class WorldMapServiceTests
     public void CalculateDesiredPosition_WhenDesiredPositionOutOfGrid_ShouldReturnsDestination()
     {
         TestRunner<WorldMapService, Position>
-            .Arrange(() => new WorldMapService(_repository.Object))
+            .Arrange(() => new WorldMapService(_mockMapRepository.Object, _mockFuneralRepository.Object))
             .Act(sut =>
             {
                 var currentPosition = new Position

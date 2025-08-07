@@ -1,6 +1,7 @@
 using Nasa.Pathfinder.Data.Contracts.Exceptions;
 using Nasa.Pathfinder.Data.Contracts.Repositories;
 using Nasa.Pathfinder.Domain.Bots;
+using Nasa.Pathfinder.Domain.Entities.Bots;
 using Nasa.Pathfinder.Facades.Contracts;
 using Nasa.Pathfinder.Facades.Contracts.Exceptions;
 
@@ -21,7 +22,7 @@ internal class BotFacade(IBotRepository repository) : IBotFacade
         }
     }
 
-    public async Task<Bot> SelectBotAsync(string botId, CancellationToken ct = default)
+    public async Task<Bot?> SelectBotAsync(string botId, CancellationToken ct = default)
     {
         try
         {
@@ -42,7 +43,7 @@ internal class BotFacade(IBotRepository repository) : IBotFacade
         }
     }
 
-    public async Task<Bot> ResetBotAsync(string botId, CancellationToken ct = default)
+    public async Task<Bot?> ResetBotAsync(string botId, CancellationToken ct = default)
     {
         try
         {
