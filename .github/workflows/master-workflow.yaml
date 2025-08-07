@@ -12,18 +12,26 @@ jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      image_tag: ${{ steps.tag.outputs.tag }}
-    permissions:
-      packages: write
-      contents: read
-    env:
-      IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/mars-pathfinder
+      version_tag: ${{ steps.version.outputs.tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Docker buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Setup .NET 9 SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.301'
+
+      - name: Read version
+        id: version
+        run: |
+          VERSION_TAG="v$(cat VERSION.txt)"
+          echo "tag=$VERSION_TAG" >> $GITHUB_OUTPUT
+
+      - name: Restore and Build
+        run: |
+          dotnet restore ./src/nasa-server/src/nasa-server.sln
+          dotnet build ./src/nasa-server/src/nasa-server.sln --configuration Release --no-restore
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -32,16 +40,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.DEPLOY_TOKEN }}
 
-      - name: Read version
-        id: version
+      - name: Build and push Docker image with release tag
         run: |
-          VERSION_TAG="v$(cat VERSION.txt)"
-          echo "tag=$VERSION_TAG" >> $GITHUB_OUTPUT
-
-      - name: Build and push Docker image
-        run: |
-          docker build -t $IMAGE_NAME:${{ steps.tag.outputs.tag }} -f src/nasa-server/src/Nasa.Pathfinder/kub.Dockerfile .
-          docker push $IMAGE_NAME:${{ steps.tag.outputs.tag }}
+          docker build -t $IMAGE_NAME:${{ steps.version.outputs.tag }} -f src/nasa-server/src/Nasa.Pathfinder/kub.Dockerfile .
+          docker push $IMAGE_NAME:${{ steps.version.outputs.tag }}
 
   tag:
     needs: build
