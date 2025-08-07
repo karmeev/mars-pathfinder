@@ -42,4 +42,11 @@ message Bot {
   string Id = 1;
   string Name = 2;
   string Status = 3;
+  Position Position = 4;
+}
+
+message Position {
+  int32 X = 1;
+  int32 Y = 2;
+  string Direction = 3;
 }

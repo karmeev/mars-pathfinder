@@ -12,34 +12,27 @@ internal class MessageDecoderService : IMessageDecoderService
         { OperatorCommand.GetShorthand<MoveLeft>(), new MoveLeft() }
     };
 
-    public string EncodeBotMessage(Position position, bool isLost, bool isSave)
+    public string EncodeBotMessage(Position position, bool isLost)
     {
-        throw new NotImplementedException();
+        if (isLost) return $"{position.X} {position.Y} {position.Direction} LOST";
+        return $"{position.X} {position.Y} {position.Direction}";
     }
 
     public Stack<IOperatorCommand> DecodeOperatorMessage(string text)
     {
         if (string.IsNullOrWhiteSpace(text) || text.Length > 100)
-        {
             throw new InvalidOperationException("Message is too long or too short for command!");
-        }
-        
+
         var symbols = text.Reverse().Select(c => c.ToString()).ToArray();
 
         var commands = new Stack<IOperatorCommand>();
         foreach (var input in symbols)
-        {
             if (_commands.TryGetValue(input, out var command))
-            {
                 commands.Push(command);
-            }
             else
-            {
                 commands.Push(new UnknownCommand());
-            }
-        }
-        
-        
+
+
         return commands;
     }
 }

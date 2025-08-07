@@ -1,6 +1,5 @@
 using Nasa.Pathfinder.Consumers.Contracts;
 using Nasa.Pathfinder.Domain.Interactions;
-using Nasa.Pathfinder.Infrastructure.Contracts.Grpc;
 using Nasa.Pathfinder.Infrastructure.Contracts.Grpc.Requests;
 using Nasa.Pathfinder.Infrastructure.Contracts.Processors;
 
@@ -10,12 +9,11 @@ internal class BotInvalidCommandConsumer(IOperatorProcessor processor) : IBotCon
 {
     public Task Consume(InvalidCommand command, CancellationToken ct = default)
     {
-        var notificationText = "Invalid bot command!";
-        var request = new SendMessageRequest(command.BotId, command.ClientId, notificationText, true, 
+        var request = new SendMessageRequest(command.BotId, command.ClientId, command.Message, true,
             true);
-        
+
         processor.SendMessage(request);
-        
+
         return Task.CompletedTask;
     }
 }

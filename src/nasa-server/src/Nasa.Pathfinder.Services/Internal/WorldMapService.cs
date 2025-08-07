@@ -1,15 +1,11 @@
+using Nasa.Pathfinder.Data.Contracts.Repositories;
 using Nasa.Pathfinder.Domain.Interactions;
 using Nasa.Pathfinder.Services.Contracts;
 
 namespace Nasa.Pathfinder.Services.Internal;
 
-internal class WorldMapService : IWorldMapService
+internal class WorldMapService(IBotRepository repository) : IWorldMapService
 {
-    public Task ChangeBotPositionAsync(Position position, CancellationToken ct = default)
-    {
-        throw new NotImplementedException();
-    }
-
     public Task<List<Position>> GetFuneralsAsync(CancellationToken ct = default)
     {
         throw new NotImplementedException();
@@ -17,19 +13,13 @@ internal class WorldMapService : IWorldMapService
 
     public Position CalculateDesiredPosition(Position currentPosition, Stack<IOperatorCommand> commands)
     {
-        foreach (var command in commands)
-        {
-            currentPosition = Move(currentPosition, command);
-        }
-        
+        foreach (var command in commands) currentPosition = Move(currentPosition, command);
+
         return currentPosition;
-        
+
         static Position Move(Position position, IOperatorCommand command)
         {
-            if (command is MoveRight or MoveLeft)
-            {
-                position.Direction = Rotate(command, position.Direction);
-            }
+            if (command is MoveRight or MoveLeft) position.Direction = Rotate(command, position.Direction);
 
             switch (position.Direction)
             {
@@ -48,10 +38,10 @@ internal class WorldMapService : IWorldMapService
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            
+
             return position;
         }
-        
+
         static Direction Rotate(IOperatorCommand command, Direction direction)
         {
             return command switch

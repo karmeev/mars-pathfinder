@@ -14,11 +14,6 @@ namespace Nasa.Pathfinder.Facades.Tests;
 [TestFixture]
 public class MessageFacadeTests
 {
-    private Mock<IBotRepository> _repositoryMock;
-    private Mock<IMessageDecoderService> _decoderServiceMock;
-    private Mock<IWorldMapService> _worldMapServiceMock;
-    private Mock<IBotProcessor> _processorServiceMock;
-    
     [SetUp]
     public void Setup()
     {
@@ -27,6 +22,11 @@ public class MessageFacadeTests
         _worldMapServiceMock = new Mock<IWorldMapService>();
         _processorServiceMock = new Mock<IBotProcessor>();
     }
+
+    private Mock<IBotRepository> _repositoryMock;
+    private Mock<IMessageDecoderService> _decoderServiceMock;
+    private Mock<IWorldMapService> _worldMapServiceMock;
+    private Mock<IBotProcessor> _processorServiceMock;
 
     [Test]
     public async Task ReceiveMessageAsync_UnsupportedMessage_ShouldThrowsException()
@@ -37,14 +37,14 @@ public class MessageFacadeTests
             .ActAsync(sut => sut.ReceiveMessageAsync(new BotMessage()))
             .ThenAssertThrowsAsync<MessageFacade, InvalidCastException>();
     }
-    
+
     [Test]
     public async Task ReceiveMessageAsync_PositionReachable_ShouldMoveNext()
     {
         const string input = "FRFFL";
         var botId = new Faker().Random.Hash();
         var clientId = new Faker().Random.Hash();
-        
+
         await TestRunner<MessageFacade>
             .Arrange(() =>
             {
@@ -54,7 +54,7 @@ public class MessageFacadeTests
                 commands.Push(new MoveFront());
                 commands.Push(new MoveFront());
                 commands.Push(new MoveLeft());
-                
+
                 _decoderServiceMock.Setup(x => x.DecodeOperatorMessage(
                         It.Is<string>(i => i.Equals(input))))
                     .Returns(commands);
@@ -74,15 +74,15 @@ public class MessageFacadeTests
                     });
 
                 _worldMapServiceMock.Setup(x => x.CalculateDesiredPosition(It.IsAny<Position>(),
-                    It.IsAny<Stack<IOperatorCommand>>()))
+                        It.IsAny<Stack<IOperatorCommand>>()))
                     .Returns(new Position
                     {
                         X = 4,
                         Y = 3,
                         Direction = Direction.N
                     });
-                
-                return new MessageFacade(_repositoryMock.Object, _decoderServiceMock.Object, 
+
+                return new MessageFacade(_repositoryMock.Object, _decoderServiceMock.Object,
                     _worldMapServiceMock.Object, _processorServiceMock.Object);
             })
             .ActAsync(sut => sut.ReceiveMessageAsync(new OperatorMessage
@@ -93,12 +93,12 @@ public class MessageFacadeTests
             }))
             .ThenAssertAsync(() =>
             {
-                _processorServiceMock.Verify(x => 
-                    x.Publish(It.IsAny<MoveCommand>()),
+                _processorServiceMock.Verify(x =>
+                        x.Publish(It.IsAny<MoveCommand>()),
                     Times.Once);
             });
     }
-    
+
     // [Test]
     // public async Task ReceiveMessageAsync_HasFuneral_ShouldStayAtPlace()
     // {

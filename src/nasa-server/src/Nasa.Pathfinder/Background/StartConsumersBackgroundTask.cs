@@ -1,6 +1,5 @@
 using Nasa.Pathfinder.Hubs;
 using Nasa.Pathfinder.Infrastructure.Contracts.Processors;
-using Nasa.Pathfinder.Services.Contracts;
 
 namespace Nasa.Pathfinder.Background;
 

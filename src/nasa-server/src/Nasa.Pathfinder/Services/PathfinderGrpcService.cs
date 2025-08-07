@@ -4,15 +4,17 @@ using Nasa.Pathfinder.Domain.Messages;
 using Nasa.Pathfinder.Facades.Contracts;
 using Nasa.Pathfinder.Facades.Contracts.Exceptions;
 using Nasa.Pathfinder.Hubs;
+using Nasa.Pathfinder.Types;
 using Pathfinder.Messages;
+using Pathfinder.Proto;
 
 namespace Nasa.Pathfinder.Services;
 
 public class PathfinderGrpcService(
     ILogger<PathfinderGrpcService> logger,
     MessageHub hub,
-    IBotFacade botFacade, 
-    IMessageFacade messageFacade) : GrpcService
+    IBotFacade botFacade,
+    IMessageFacade messageFacade) : PathfinderService.PathfinderServiceBase
 {
     public override async Task<PingResponse> Ping(Empty request, ServerCallContext context)
     {
@@ -26,18 +28,8 @@ public class PathfinderGrpcService(
     public override async Task<GetBotsResponse> GetBots(Empty request, ServerCallContext context)
     {
         var result = await botFacade.GetBotsAsync(context.CancellationToken);
-        
-        var response = new GetBotsResponse();
-        foreach (var bot in result)
-        {
-            response.Bots.Add(new Bot
-            {
-                Id = bot.Id,
-                Name = bot.Name,
-                Status = bot.Status.ToString(),
-            });
-        }
 
+        var response = Response.MapToGetBotsResponse(result);
         return response;
     }
 
@@ -46,19 +38,11 @@ public class PathfinderGrpcService(
         try
         {
             var bot = await botFacade.SelectBotAsync(request.BotId, context.CancellationToken);
-            return new SelectBotResponse
-            {
-                Bot = new Bot
-                {
-                    Id = bot.Id,
-                    Name = bot.Name,
-                    Status = bot.Status.ToString(),
-                },
-            };
+            return Response.MapToSelectBotResponse(bot);
         }
         catch (BotAlreadyAcquiredException e)
         {
-            return InvalidArgument<SelectBotResponse>("Bot already acquired");
+            return Response.InvalidArgument<SelectBotResponse>("Bot already acquired");
         }
     }
 
@@ -67,33 +51,24 @@ public class PathfinderGrpcService(
         try
         {
             var bot = await botFacade.ResetBotAsync(request.BotId, context.CancellationToken);
-            var response = new ResetBotResponse
-            {
-                Bot = new Bot
-                {
-                    Id = bot.Id,
-                    Name = bot.Name,
-                    Status = bot.Status.ToString(),
-                },
-            };
-            return response;
+            return Response.MapToResetBotResponse(bot);
         }
         catch (BotAlreadyReleasedException e)
         {
-            return InvalidArgument<ResetBotResponse>("Bot already released");
+            return Response.InvalidArgument<ResetBotResponse>("Bot already released");
         }
     }
 
-    public override async Task SendMessage(IAsyncStreamReader<SendMessageRequest> requestStream, 
+    public override async Task SendMessage(IAsyncStreamReader<SendMessageRequest> requestStream,
         IServerStreamWriter<SendMessageResponse> responseStream, ServerCallContext context)
     {
         var headers = context.RequestHeaders;
         var clientId = headers.GetValue("clientId");
-        
+
         try
         {
             hub.Connect(clientId, responseStream);
-            
+
             await foreach (var message in requestStream.ReadAllAsync())
             {
                 var operatorMessage = new OperatorMessage

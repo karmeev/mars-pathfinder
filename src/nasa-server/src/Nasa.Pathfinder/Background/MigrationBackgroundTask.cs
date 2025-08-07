@@ -21,7 +21,7 @@ public class MigrationBackgroundTask(IMemoryDataContext context) : IHostedServic
                 Direction = Direction.N
             }
         }, cancellationToken);
-        
+
         await context.PushAsync(new Bot
         {
             Id = Guid.NewGuid().ToString(),
@@ -35,7 +35,7 @@ public class MigrationBackgroundTask(IMemoryDataContext context) : IHostedServic
                 Direction = Direction.N
             }
         }, cancellationToken);
-        
+
         await context.PushAsync(new Bot
         {
             Id = Guid.NewGuid().ToString(),

@@ -16,10 +16,10 @@ internal class MessageFacade(
     public async Task ReceiveMessageAsync(IMessage message, CancellationToken ct = default)
     {
         var correlationId = Guid.CreateVersion7();
-        
+
         if (message is not OperatorMessage operatorMessage)
             throw new InvalidCastException();
-        
+
         Stack<IOperatorCommand> commands;
 
         try
@@ -30,15 +30,15 @@ internal class MessageFacade(
         }
         catch (InvalidOperationException ex)
         {
-            processor.Publish(new InvalidCommand(operatorMessage.ClientId, operatorMessage.BotId, ex.Message, 
+            processor.Publish(new InvalidCommand(operatorMessage.ClientId, operatorMessage.BotId, ex.Message,
                 correlationId));
             return;
         }
-        
+
         var bot = await repository.GetAsync(operatorMessage.BotId, ct);
 
         var desiredPosition = worldMap.CalculateDesiredPosition(bot.Position, commands);
-        
+
         processor.Publish(new MoveCommand(operatorMessage.ClientId, bot, desiredPosition, correlationId));
     }
 }

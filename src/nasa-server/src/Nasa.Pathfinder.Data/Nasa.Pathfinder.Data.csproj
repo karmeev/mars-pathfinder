@@ -7,12 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Autofac" Version="8.3.0" />
+        <PackageReference Include="Autofac" Version="8.3.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Nasa.Pathfinder.Data.Contracts\Nasa.Pathfinder.Data.Contracts.csproj" />
-      <ProjectReference Include="..\Nasa.Pathfinder.Infrastructure.Contracts\Nasa.Pathfinder.Infrastructure.Contracts.csproj" />
+        <ProjectReference Include="..\Nasa.Pathfinder.Data.Contracts\Nasa.Pathfinder.Data.Contracts.csproj"/>
+        <ProjectReference Include="..\Nasa.Pathfinder.Infrastructure.Contracts\Nasa.Pathfinder.Infrastructure.Contracts.csproj"/>
     </ItemGroup>
 
 </Project>

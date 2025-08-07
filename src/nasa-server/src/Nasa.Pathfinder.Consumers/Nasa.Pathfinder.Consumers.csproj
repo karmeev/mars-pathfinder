@@ -7,15 +7,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Nasa.Pathfinder.Consumers.Contracts\Nasa.Pathfinder.Consumers.Contracts.csproj" />
-      <ProjectReference Include="..\Nasa.Pathfinder.Data.Contracts\Nasa.Pathfinder.Data.Contracts.csproj" />
-      <ProjectReference Include="..\Nasa.Pathfinder.Domain\Nasa.Pathfinder.Domain.csproj" />
-      <ProjectReference Include="..\Nasa.Pathfinder.Infrastructure.Contracts\Nasa.Pathfinder.Infrastructure.Contracts.csproj" />
-      <ProjectReference Include="..\Nasa.Pathfinder.Services.Contracts\Nasa.Pathfinder.Services.Contracts.csproj" />
+        <ProjectReference Include="..\Nasa.Pathfinder.Consumers.Contracts\Nasa.Pathfinder.Consumers.Contracts.csproj"/>
+        <ProjectReference Include="..\Nasa.Pathfinder.Data.Contracts\Nasa.Pathfinder.Data.Contracts.csproj"/>
+        <ProjectReference Include="..\Nasa.Pathfinder.Domain\Nasa.Pathfinder.Domain.csproj"/>
+        <ProjectReference Include="..\Nasa.Pathfinder.Infrastructure.Contracts\Nasa.Pathfinder.Infrastructure.Contracts.csproj"/>
+        <ProjectReference Include="..\Nasa.Pathfinder.Services.Contracts\Nasa.Pathfinder.Services.Contracts.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Autofac" Version="8.4.0" />
+        <PackageReference Include="Autofac" Version="8.4.0"/>
     </ItemGroup>
 
 </Project>

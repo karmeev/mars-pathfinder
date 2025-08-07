@@ -9,7 +9,6 @@ using Nasa.Pathfinder.Services.Contracts;
 namespace Nasa.Pathfinder.Consumers.Internal;
 
 internal class BotDeadWalkerConsumer(
-    IWorldMapService worldMap,
     IMessageDecoderService messageDecoder,
     IBotRepository repository,
     IOperatorProcessor processor) : IBotConsumer<DeadCommand>
@@ -17,9 +16,9 @@ internal class BotDeadWalkerConsumer(
     public async Task Consume(DeadCommand command, CancellationToken ct = default)
     {
         await repository.ChangeBotStatusAsync(command.BotId, BotStatus.Dead, ct);
-        await worldMap.ChangeBotPositionAsync(command.DesiredPosition, ct);
-        var notificationText = messageDecoder.EncodeBotMessage(command.DesiredPosition, true, false);
-        var request = new SendMessageRequest(command.BotId, command.ClientId, notificationText, true, 
+        await repository.ChangeBotPositionAsync(command.BotId, command.DesiredPosition, ct);
+        var notificationText = messageDecoder.EncodeBotMessage(command.DesiredPosition, true);
+        var request = new SendMessageRequest(command.BotId, command.ClientId, notificationText, true,
             false);
         processor.SendMessage(request);
     }

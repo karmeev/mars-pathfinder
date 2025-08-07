@@ -1,3 +1,5 @@
+using Moq;
+using Nasa.Pathfinder.Data.Contracts.Repositories;
 using Nasa.Pathfinder.Domain.Interactions;
 using Nasa.Pathfinder.Services.Internal;
 using Nasa.Pathfinder.Tests;
@@ -8,11 +10,19 @@ namespace Nasa.Pathfinder.Services.Tests;
 [TestFixture]
 public class WorldMapServiceTests
 {
+    [SetUp]
+    public void Setup()
+    {
+        _repository = new Mock<IBotRepository>();
+    }
+
+    private Mock<IBotRepository> _repository;
+
     [Test]
     public void CalculateDesiredPosition_WhenWeGotListOfCommands_ShouldReturnsDestination()
     {
         TestRunner<WorldMapService, Position>
-            .Arrange(() => new WorldMapService())
+            .Arrange(() => new WorldMapService(_repository.Object))
             .Act(sut =>
             {
                 var currentPosition = new Position
@@ -21,7 +31,7 @@ public class WorldMapServiceTests
                     Y = 1,
                     Direction = Direction.E
                 };
-                
+
                 var commands = new Stack<IOperatorCommand>();
                 commands.Push(new MoveFront());
                 commands.Push(new MoveRight());
@@ -31,7 +41,7 @@ public class WorldMapServiceTests
                 commands.Push(new MoveRight());
                 commands.Push(new MoveFront());
                 commands.Push(new MoveRight());
-                
+
                 return sut.CalculateDesiredPosition(currentPosition, commands);
             })
             .Assert(position =>
@@ -44,12 +54,12 @@ public class WorldMapServiceTests
                 });
             });
     }
-    
+
     [Test]
     public void CalculateDesiredPosition_WhenDesiredPositionOutOfGrid_ShouldReturnsDestination()
     {
         TestRunner<WorldMapService, Position>
-            .Arrange(() => new WorldMapService())
+            .Arrange(() => new WorldMapService(_repository.Object))
             .Act(sut =>
             {
                 var currentPosition = new Position
@@ -70,8 +80,8 @@ public class WorldMapServiceTests
                 commands.Push(new MoveFront());
                 commands.Push(new MoveLeft());
                 commands.Push(new MoveLeft());
-                
-                
+
+
                 return sut.CalculateDesiredPosition(currentPosition, commands);
             })
             .Assert(position =>

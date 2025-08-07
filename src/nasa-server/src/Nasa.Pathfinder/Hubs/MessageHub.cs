@@ -8,17 +8,14 @@ namespace Nasa.Pathfinder.Hubs;
 
 public class MessageHub(Channel<SendMessageRequest> channel)
 {
-    private SemaphoreSlim _limiter = new(10);
-    private ConcurrentDictionary<string, IServerStreamWriter<SendMessageResponse>> _streams = new();
+    private readonly SemaphoreSlim _limiter = new(10);
     private readonly ConcurrentQueue<SendMessageRequest> _responseQueue = new();
+    private readonly ConcurrentDictionary<string, IServerStreamWriter<SendMessageResponse>> _streams = new();
 
     public void Start()
     {
         StartReceiver(channel, _responseQueue);
-        for (var i = 0; i < 3; i++)
-        {
-            StartConsumer(_responseQueue, CancellationToken.None);
-        }
+        for (var i = 0; i < 3; i++) StartConsumer(_responseQueue, CancellationToken.None);
     }
 
     public void Connect(string clientId, IServerStreamWriter<SendMessageResponse> stream)
@@ -30,7 +27,7 @@ public class MessageHub(Channel<SendMessageRequest> channel)
     {
         _streams.TryRemove(clientId, out _);
     }
-    
+
     private Task StartReceiver(Channel<SendMessageRequest> channel, ConcurrentQueue<SendMessageRequest> queue)
     {
         return Task.Run(async () =>
@@ -42,7 +39,7 @@ public class MessageHub(Channel<SendMessageRequest> channel)
             }
         });
     }
-    
+
     private Task StartConsumer(ConcurrentQueue<SendMessageRequest> queue, CancellationToken token)
     {
         return Task.Run(async () =>
@@ -54,15 +51,12 @@ public class MessageHub(Channel<SendMessageRequest> channel)
                     await Task.Delay(20, token);
                     continue;
                 }
-                
-                if (queue.TryDequeue(out var message))
-                {
-                    await NotifyClient(message);
-                }
+
+                if (queue.TryDequeue(out var message)) await NotifyClient(message);
             }
         }, token);
     }
-    
+
     private async Task NotifyClient(SendMessageRequest message)
     {
         if (_streams.TryGetValue(message.ClientId, out var stream))

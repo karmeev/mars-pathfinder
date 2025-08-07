@@ -11,15 +11,15 @@ public static class Registry
     public static void RegisterServices(IServiceCollection services)
     {
         var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
-        
+
         var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: true)
+            .AddJsonFile("appsettings.json", false, true)
+            .AddJsonFile($"appsettings.{env}.json", true, true)
             .AddEnvironmentVariables()
             .Build();
 
         services.AddOptions();
-        
+
         services.AddHostedService<StartConsumersBackgroundTask>();
         services.AddHostedService<MigrationBackgroundTask>();
         services.AddGrpc(options =>
@@ -30,7 +30,7 @@ public static class Registry
         Infrastructure.Registry.Register(services);
         services.Configure<EnableSettings>(configuration.GetSection("FeatureGate:Enablers"));
     }
-    
+
     public static void RegisterContainer(ContainerBuilder builder)
     {
         Facades.Registry.Register(builder);

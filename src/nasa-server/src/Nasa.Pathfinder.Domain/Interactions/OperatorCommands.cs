@@ -36,5 +36,5 @@ public static class OperatorCommand
     {
         var instance = Activator.CreateInstance<T>();
         return instance.Shorthand;
-    } 
+    }
 }

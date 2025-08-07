@@ -22,6 +22,7 @@ public record WalkCommand(
 public record StandCommand(
     string ClientId,
     string BotId,
+    Position CurrentPosition,
     Guid CorrelationId = default) : IBotCommand;
 
 public record DeadCommand(
@@ -34,4 +35,4 @@ public record InvalidCommand(
     string ClientId,
     string BotId,
     string Message,
-    Guid CorrelationId = default) : IBotCommand;    
+    Guid CorrelationId = default) : IBotCommand;

@@ -77,6 +77,11 @@ internal class DrivingView(IViewFactory factory, IStore store) : IView
     
     private void RenderChat(IReadOnlyList<IMessage> messages)
     {
+        if (store.CurrentState.ControlPanelState.IsStreaming)
+        {
+            AnsiConsole.MarkupLine($"[grey]Current position:[/] [bold]Disconnected[/]");
+        }
+        
         AnsiConsole.MarkupLine("[underline]Chat:[/]");
         foreach (var msg in messages)
         {

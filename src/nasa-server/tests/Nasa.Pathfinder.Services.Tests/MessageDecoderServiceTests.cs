@@ -23,7 +23,7 @@ public class MessageDecoderServiceTests
                 Assert.That(ConvertToString(result), Is.EqualTo(input));
             });
     }
-    
+
     [Test]
     public void DecodeOperatorMessage_ProvidedIncorrectText_ShouldReturnUnknownCommands()
     {
@@ -37,7 +37,7 @@ public class MessageDecoderServiceTests
                 Assert.That(result.Where(x => x is UnknownCommand).Count, Is.EqualTo(4));
             });
     }
-    
+
     [Test]
     public void DecodeOperatorMessage_ProvidedLongText_ShouldThrowInvalidOperationException()
     {
@@ -49,7 +49,7 @@ public class MessageDecoderServiceTests
                 Assert.Throws<InvalidOperationException>(() => sut.DecodeOperatorMessage(command));
             });
     }
-    
+
     [Test]
     public void DecodeOperatorMessage_ProvidedEmptyText_ShouldThrowInvalidOperationException()
     {
@@ -62,14 +62,51 @@ public class MessageDecoderServiceTests
             });
     }
 
+    [Test]
+    public void EncodeBotMessage_ProvidedPosition_ShouldReturnTextRepresentation()
+    {
+        var position = new Position
+        {
+            X = 1,
+            Y = 2,
+            Direction = Direction.N
+        };
+
+        TestRunner<MessageDecoderService, string>
+            .Arrange(() => new MessageDecoderService())
+            .Act(sut => sut.EncodeBotMessage(position, false))
+            .Assert(result =>
+            {
+                Assert.That(result, Is.Not.Null.And.Not.Empty);
+                Assert.That(result, Is.EqualTo("1 2 N"));
+            });
+    }
+
+    [Test]
+    public void EncodeBotMessage_ProvidedLostPosition_ShouldReturnTextRepresentation()
+    {
+        var position = new Position
+        {
+            X = 1,
+            Y = 2,
+            Direction = Direction.N
+        };
+
+        TestRunner<MessageDecoderService, string>
+            .Arrange(() => new MessageDecoderService())
+            .Act(sut => sut.EncodeBotMessage(position, true))
+            .Assert(result =>
+            {
+                Assert.That(result, Is.Not.Null.And.Not.Empty);
+                Assert.That(result, Is.EqualTo("1 2 N LOST"));
+            });
+    }
+
     private string ConvertToString(Stack<IOperatorCommand> commands)
     {
-        string output = string.Empty;
-        foreach (var command in commands)
-        {
-            output += command.Shorthand;
-        }
-        
+        var output = string.Empty;
+        foreach (var command in commands) output += command.Shorthand;
+
         return output;
     }
 }

@@ -48,7 +48,7 @@ public class TestRunner<TSut, TResult>
         await assert(_result);
         return this;
     }
-    
+
     public void ActAndAssert(Action<TSut> actAndAssert)
     {
         _sut = _arrange();
@@ -114,7 +114,7 @@ public static class TestRunnerExtensions
         var runner = await runnerTask;
         runner.Assert(assert);
     }
-    
+
     public static async Task ThenAssertDoesNotThrowAsync<TSut, TResult>(
         this Task<TestRunner<TSut, TResult>> runnerTask,
         Func<TResult, Task> assert)
@@ -130,25 +130,19 @@ public static class TestRunnerExtensions
         this Task<TestRunner<TSut, TResult>> runnerTask,
         Action<TResult> assert)
     {
-        Assert.DoesNotThrowAsync(async () =>
-        {
-            await runnerTask;
-        });
+        Assert.DoesNotThrowAsync(async () => { await runnerTask; });
     }
-    
+
     public static async Task ThenAssertThrowsAsync<TSut, TResult, TException>(
         this Task<TestRunner<TSut, TResult>> runnerTask) where TException : Exception
     {
         await Task.CompletedTask;
-        
-        Assert.ThrowsAsync<TException>(async () =>
-        {
-            await runnerTask;
-        });
+
+        Assert.ThrowsAsync<TException>(async () => { await runnerTask; });
     }
 
     /*---- Void ----*/
-    
+
     public static async Task ThenAssertAsync<TSut>(
         this Task<TestRunner<TSut>> runnerTask,
         Func<Task> assert)
@@ -164,24 +158,18 @@ public static class TestRunnerExtensions
         var runner = await runnerTask;
         runner.Assert(assert);
     }
-    
+
     public static async Task ThenAssertThrowsAsync<TSut, TException>(
         this Task<TestRunner<TSut>> runnerTask) where TException : Exception
     {
         await Task.CompletedTask;
 
-        Assert.ThrowsAsync<TException>(async () =>
-        {
-            await runnerTask;
-        });
+        Assert.ThrowsAsync<TException>(async () => { await runnerTask; });
     }
-    
+
     public static async Task ThenAssertDoesNotThrowAsync<TSut>(
         this Task<TestRunner<TSut>> runnerTask)
     {
-        Assert.DoesNotThrowAsync(async () =>
-        {
-            await runnerTask;
-        });
+        Assert.DoesNotThrowAsync(async () => { await runnerTask; });
     }
 }

@@ -13,15 +13,15 @@ internal class BotConsumer(
     {
         var funerals = await worldMap.GetFuneralsAsync(ct);
         var isTrap = funerals.Contains(command.DesiredPosition);
-        
+
         var isAccessible = await worldMap.TryReachPosition(command.DesiredPosition, ct);
         if (isTrap && isAccessible)
         {
-            var stand = new StandCommand(command.ClientId, command.Bot.Id, command.CorrelationId);
+            var stand = new StandCommand(command.ClientId, command.Bot.Id, command.Bot.Position, command.CorrelationId);
             processor.Publish(stand);
             return;
         }
-        
+
         if (!isAccessible)
         {
             var lost = new DeadCommand(command.ClientId, command.Bot.Id, command.DesiredPosition,

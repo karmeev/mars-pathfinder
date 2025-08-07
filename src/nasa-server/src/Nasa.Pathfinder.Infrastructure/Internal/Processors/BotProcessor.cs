@@ -8,11 +8,11 @@ namespace Nasa.Pathfinder.Infrastructure.Internal.Processors;
 
 internal class BotProcessor(ILifetimeScope scope) : IBotProcessor
 {
-    private readonly ConcurrentQueue<StandCommand> _queueStand = new();
     private readonly ConcurrentQueue<DeadCommand> _queueDead = new();
-    private readonly ConcurrentQueue<WalkCommand> _queueWalk = new();
-    private readonly ConcurrentQueue<MoveCommand> _queueMove = new();
     private readonly ConcurrentQueue<InvalidCommand> _queueInvalid = new();
+    private readonly ConcurrentQueue<MoveCommand> _queueMove = new();
+    private readonly ConcurrentQueue<StandCommand> _queueStand = new();
+    private readonly ConcurrentQueue<WalkCommand> _queueWalk = new();
 
     public void Publish(IBotCommand command)
     {
@@ -38,8 +38,7 @@ internal class BotProcessor(ILifetimeScope scope) : IBotProcessor
 
     public void RunConsumers()
     {
-        for (int i = 0; i < 2; i++)
-        {
+        for (var i = 0; i < 2; i++)
             Task.Run(async () =>
             {
                 if (_queueStand.TryDequeue(out var command))
@@ -50,10 +49,8 @@ internal class BotProcessor(ILifetimeScope scope) : IBotProcessor
 
                 await Task.Delay(5);
             });
-        }
-        
-        for (int i = 0; i < 2; i++)
-        {
+
+        for (var i = 0; i < 2; i++)
             Task.Run(async () =>
             {
                 while (true)
@@ -67,10 +64,8 @@ internal class BotProcessor(ILifetimeScope scope) : IBotProcessor
                     await Task.Delay(5);
                 }
             });
-        }
-        
-        for (int i = 0; i < 2; i++)
-        {
+
+        for (var i = 0; i < 2; i++)
             Task.Run(async () =>
             {
                 while (true)
@@ -84,10 +79,8 @@ internal class BotProcessor(ILifetimeScope scope) : IBotProcessor
                     await Task.Delay(5);
                 }
             });
-        }
-        
-        for (int i = 0; i < 2; i++)
-        {
+
+        for (var i = 0; i < 2; i++)
             Task.Run(async () =>
             {
                 while (true)
@@ -97,14 +90,12 @@ internal class BotProcessor(ILifetimeScope scope) : IBotProcessor
                         var consumer = scope.Resolve<IBotConsumer<MoveCommand>>();
                         await consumer.Consume(command, CancellationToken.None);
                     }
-        
+
                     await Task.Delay(5);
                 }
             });
-        }
-        
-        for (int i = 0; i < 2; i++)
-        {
+
+        for (var i = 0; i < 2; i++)
             Task.Run(async () =>
             {
                 while (true)
@@ -118,6 +109,5 @@ internal class BotProcessor(ILifetimeScope scope) : IBotProcessor
                     await Task.Delay(5);
                 }
             });
-        }
     }
 }

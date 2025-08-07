@@ -1,7 +1,8 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Nasa.Pathfinder;
+using Nasa.Pathfinder.Services;
+using Registry = Nasa.Pathfinder.Registry;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,9 +14,9 @@ builder.WebHost.ConfigureKestrel(options =>
 });
 
 Registry.RegisterServices(builder.Services);
-builder.Host.ConfigureContainer<ContainerBuilder>(container => 
+builder.Host.ConfigureContainer<ContainerBuilder>(container =>
     Registry.RegisterContainer(container));
 
 var app = builder.Build();
-app.MapGrpcService<Nasa.Pathfinder.Services.PathfinderGrpcService>();
+app.MapGrpcService<PathfinderGrpcService>();
 app.Run();
