@@ -56,13 +56,16 @@ internal class BotProcessorService(ILifetimeScope scope) : IBotProcessorService
         {
             Task.Run(async () =>
             {
-                if (_queueDead.TryDequeue(out var command))
+                while (true)
                 {
-                    var consumer = scope.Resolve<IBotConsumer<DeadCommand>>();
-                    await consumer.Consume(command);
-                }
+                    if (_queueDead.TryDequeue(out var command))
+                    {
+                        var consumer = scope.Resolve<IBotConsumer<DeadCommand>>();
+                        await consumer.Consume(command);
+                    }
 
-                await Task.Delay(5);
+                    await Task.Delay(5);
+                }
             });
         }
         
@@ -70,13 +73,16 @@ internal class BotProcessorService(ILifetimeScope scope) : IBotProcessorService
         {
             Task.Run(async () =>
             {
-                if (_queueWalk.TryDequeue(out var command))
+                while (true)
                 {
-                    var consumer = scope.Resolve<IBotConsumer<WalkCommand>>();
-                    await consumer.Consume(command);
-                }
+                    if (_queueWalk.TryDequeue(out var command))
+                    {
+                        var consumer = scope.Resolve<IBotConsumer<WalkCommand>>();
+                        await consumer.Consume(command);
+                    }
 
-                await Task.Delay(5);
+                    await Task.Delay(5);
+                }
             });
         }
         
@@ -84,13 +90,16 @@ internal class BotProcessorService(ILifetimeScope scope) : IBotProcessorService
         {
             Task.Run(async () =>
             {
-                if (_queueMove.TryDequeue(out var command))
+                while (true)
                 {
-                    var consumer = scope.Resolve<IBotConsumer<MoveCommand>>();
-                    await consumer.Consume(command);
+                    if (_queueMove.TryDequeue(out var command))
+                    {
+                        var consumer = scope.Resolve<IBotConsumer<MoveCommand>>();
+                        await consumer.Consume(command);
+                    }
+        
+                    await Task.Delay(5);
                 }
-
-                await Task.Delay(5);
             });
         }
         
@@ -98,13 +107,16 @@ internal class BotProcessorService(ILifetimeScope scope) : IBotProcessorService
         {
             Task.Run(async () =>
             {
-                if (_queueInvalid.TryDequeue(out var command))
+                while (true)
                 {
-                    var consumer = scope.Resolve<IBotConsumer<InvalidCommand>>();
-                    await consumer.Consume(command);
-                }
+                    if (_queueInvalid.TryDequeue(out var command))
+                    {
+                        var consumer = scope.Resolve<IBotConsumer<InvalidCommand>>();
+                        await consumer.Consume(command);
+                    }
 
-                await Task.Delay(5);
+                    await Task.Delay(5);
+                }
             });
         }
     }

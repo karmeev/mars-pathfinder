@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Net.Client;
@@ -172,6 +173,49 @@ public class PathfinderServiceTests
                     Assert.That(response, Is.TypeOf<RpcException>());
                     Assert.That(response.StatusCode, Is.EqualTo(StatusCode.InvalidArgument));
                 });
+            });
+    }
+
+    [Test]
+    public async Task SendMessage_SendCommandAndWaitResult_ShouldReturnMessageWithBotStatus()
+    {
+        await TestRunner<Client, SendMessageResponse>
+            .Arrange(() => new Client(_channel))
+            .ActAsync(async sut =>
+            {
+                var bot = sut.GetBots(new Empty()).Bots.First();
+                bot = sut.SelectBot(new SelectBotRequest
+                {
+                    BotId = bot.Id
+                }).Bot;
+
+                var stream = sut.SendMessage(new Metadata
+                {
+                    { "TraceId", Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString() },
+                    { "clientId", Guid.NewGuid().ToString() }
+                });
+
+                var cts = new CancellationTokenSource();
+
+                await stream.RequestStream.WriteAsync(new SendMessageRequest
+                {
+                    BotId = bot.Id,
+                    Message = "RFRFRFRF"
+                }, cts.Token);
+                
+                await stream.RequestStream.CompleteAsync();
+
+                while (await stream.ResponseStream.MoveNext(cts.Token))
+                {
+                    var response = stream.ResponseStream.Current;
+                    return response;
+                }
+
+                throw new Exception("No response received from gRPC stream.");
+            })
+            .ThenAssertAsync(_ =>
+            {
+                Assert.Pass();
             });
     }
     

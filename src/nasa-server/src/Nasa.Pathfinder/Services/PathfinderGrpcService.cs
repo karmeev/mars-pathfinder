@@ -37,8 +37,6 @@ public class PathfinderGrpcService(
                 Status = bot.Status.ToString(),
             });
         }
-        
-        logger.LogInformation("GetBots: {GetBots}", response.Bots.Select(b => b.Id).ToList());
 
         return response;
     }
@@ -110,19 +108,21 @@ public class PathfinderGrpcService(
         catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
         {
             logger.LogError("completed; Client {clientId} disconnected intentionally.", clientId);
+            hub.Disconnect(clientId);
         }
         catch (IOException ex)
         {
             logger.LogWarning("completed; Client {clientId} stream aborted: {exceptionMessage}", clientId, ex.Message);
+            hub.Disconnect(clientId);
         }
         catch (Exception ex)
         {
             logger.LogError("completed; Client {clientId} stream aborted: {exceptionMessage}", clientId, ex.Message);
+            hub.Disconnect(clientId);
         }
         finally
         {
-            logger.LogInformation("completed; Client {clientId} cleanup done.", clientId);
-            hub.Disconnect(clientId);
+            logger.LogInformation("completed; Message received; Client: {clientId}", clientId);
         }
     }
 }
