@@ -10,6 +10,5 @@ public static class Registry
     {
         builder.RegisterType<WorldMapService>().As<IWorldMapService>();
         builder.RegisterType<MessageDecoderService>().As<IMessageDecoderService>().SingleInstance();
-        builder.RegisterType<BotProcessorService>().As<IBotProcessorService>().SingleInstance();
     }
 }

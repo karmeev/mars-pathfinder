@@ -1,8 +1,8 @@
 using Nasa.Pathfinder.Domain.Interactions;
 
-namespace Nasa.Pathfinder.Services.Contracts;
+namespace Nasa.Pathfinder.Infrastructure.Contracts.Processors;
 
-public interface IBotProcessorService
+public interface IBotProcessor
 {
     void RunConsumers();
     void Publish(IBotCommand command);

@@ -4,4 +4,5 @@ public record SendMessageRequest(
     string ClientId,
     string BotId,
     string Message,
-    bool IsLost);
+    bool IsLost,
+    bool IsInvalidCommand);

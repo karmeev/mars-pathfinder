@@ -1,8 +1,8 @@
 using Nasa.Pathfinder.Infrastructure.Contracts.Grpc.Requests;
 
-namespace Nasa.Pathfinder.Infrastructure.Contracts.Grpc;
+namespace Nasa.Pathfinder.Infrastructure.Contracts.Processors;
 
-public interface IOperatorStream
+public interface IOperatorProcessor
 {
     void SendMessage(SendMessageRequest message);
 }

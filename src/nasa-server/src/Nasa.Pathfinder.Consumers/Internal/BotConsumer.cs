@@ -1,11 +1,12 @@
 using Nasa.Pathfinder.Consumers.Contracts;
 using Nasa.Pathfinder.Domain.Interactions;
+using Nasa.Pathfinder.Infrastructure.Contracts.Processors;
 using Nasa.Pathfinder.Services.Contracts;
 
 namespace Nasa.Pathfinder.Consumers.Internal;
 
 internal class BotConsumer(
-    IBotProcessorService processor,
+    IBotProcessor processor,
     IWorldMapService worldMap) : IBotConsumer<MoveCommand>
 {
     public async Task Consume(MoveCommand command, CancellationToken ct = default)

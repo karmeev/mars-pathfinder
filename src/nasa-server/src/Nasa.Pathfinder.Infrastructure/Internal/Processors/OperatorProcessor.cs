@@ -1,10 +1,10 @@
 using System.Threading.Channels;
-using Nasa.Pathfinder.Infrastructure.Contracts.Grpc;
 using Nasa.Pathfinder.Infrastructure.Contracts.Grpc.Requests;
+using Nasa.Pathfinder.Infrastructure.Contracts.Processors;
 
-namespace Nasa.Pathfinder.Infrastructure.Internal.Grpc;
+namespace Nasa.Pathfinder.Infrastructure.Internal.Processors;
 
-internal class OperatorStream(ChannelWriter<SendMessageRequest> writer) : IOperatorStream
+internal class OperatorProcessor(ChannelWriter<SendMessageRequest> writer) : IOperatorProcessor
 {
     public void SendMessage(SendMessageRequest message)
     {

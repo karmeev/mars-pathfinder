@@ -2,11 +2,11 @@ using System.Collections.Concurrent;
 using Autofac;
 using Nasa.Pathfinder.Consumers.Contracts;
 using Nasa.Pathfinder.Domain.Interactions;
-using Nasa.Pathfinder.Services.Contracts;
+using Nasa.Pathfinder.Infrastructure.Contracts.Processors;
 
-namespace Nasa.Pathfinder.Services.Internal;
+namespace Nasa.Pathfinder.Infrastructure.Internal.Processors;
 
-internal class BotProcessorService(ILifetimeScope scope) : IBotProcessorService
+internal class BotProcessor(ILifetimeScope scope) : IBotProcessor
 {
     private readonly ConcurrentQueue<StandCommand> _queueStand = new();
     private readonly ConcurrentQueue<DeadCommand> _queueDead = new();
@@ -45,7 +45,7 @@ internal class BotProcessorService(ILifetimeScope scope) : IBotProcessorService
                 if (_queueStand.TryDequeue(out var command))
                 {
                     var consumer = scope.Resolve<IBotConsumer<StandCommand>>();
-                    await consumer.Consume(command);
+                    await consumer.Consume(command, CancellationToken.None);
                 }
 
                 await Task.Delay(5);
@@ -61,7 +61,7 @@ internal class BotProcessorService(ILifetimeScope scope) : IBotProcessorService
                     if (_queueDead.TryDequeue(out var command))
                     {
                         var consumer = scope.Resolve<IBotConsumer<DeadCommand>>();
-                        await consumer.Consume(command);
+                        await consumer.Consume(command, CancellationToken.None);
                     }
 
                     await Task.Delay(5);
@@ -78,7 +78,7 @@ internal class BotProcessorService(ILifetimeScope scope) : IBotProcessorService
                     if (_queueWalk.TryDequeue(out var command))
                     {
                         var consumer = scope.Resolve<IBotConsumer<WalkCommand>>();
-                        await consumer.Consume(command);
+                        await consumer.Consume(command, CancellationToken.None);
                     }
 
                     await Task.Delay(5);
@@ -95,7 +95,7 @@ internal class BotProcessorService(ILifetimeScope scope) : IBotProcessorService
                     if (_queueMove.TryDequeue(out var command))
                     {
                         var consumer = scope.Resolve<IBotConsumer<MoveCommand>>();
-                        await consumer.Consume(command);
+                        await consumer.Consume(command, CancellationToken.None);
                     }
         
                     await Task.Delay(5);
@@ -112,7 +112,7 @@ internal class BotProcessorService(ILifetimeScope scope) : IBotProcessorService
                     if (_queueInvalid.TryDequeue(out var command))
                     {
                         var consumer = scope.Resolve<IBotConsumer<InvalidCommand>>();
-                        await consumer.Consume(command);
+                        await consumer.Consume(command, CancellationToken.None);
                     }
 
                     await Task.Delay(5);

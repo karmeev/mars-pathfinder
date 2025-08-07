@@ -2,6 +2,7 @@ using Nasa.Pathfinder.Data.Contracts.Repositories;
 using Nasa.Pathfinder.Domain.Interactions;
 using Nasa.Pathfinder.Domain.Messages;
 using Nasa.Pathfinder.Facades.Contracts;
+using Nasa.Pathfinder.Infrastructure.Contracts.Processors;
 using Nasa.Pathfinder.Services.Contracts;
 
 namespace Nasa.Pathfinder.Facades.Internal;
@@ -10,7 +11,7 @@ internal class MessageFacade(
     IBotRepository repository,
     IMessageDecoderService messageDecoder,
     IWorldMapService worldMap,
-    IBotProcessorService processor) : IMessageFacade
+    IBotProcessor processor) : IMessageFacade
 {
     public async Task ReceiveMessageAsync(IMessage message, CancellationToken ct = default)
     {

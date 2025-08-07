@@ -13,6 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Nasa.Pathfinder.Consumers.Contracts\Nasa.Pathfinder.Consumers.Contracts.csproj" />
       <ProjectReference Include="..\Nasa.Pathfinder.Infrastructure.Contracts\Nasa.Pathfinder.Infrastructure.Contracts.csproj" />
     </ItemGroup>
 

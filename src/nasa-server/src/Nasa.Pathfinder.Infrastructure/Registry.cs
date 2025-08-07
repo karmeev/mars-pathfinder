@@ -4,8 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Nasa.Pathfinder.Infrastructure.Contracts.DataContexts;
 using Nasa.Pathfinder.Infrastructure.Contracts.Grpc;
 using Nasa.Pathfinder.Infrastructure.Contracts.Grpc.Requests;
-using Nasa.Pathfinder.Infrastructure.Internal.Grpc;
+using Nasa.Pathfinder.Infrastructure.Contracts.Processors;
 using Nasa.Pathfinder.Infrastructure.Internal.Memory;
+using Nasa.Pathfinder.Infrastructure.Internal.Processors;
 
 namespace Nasa.Pathfinder.Infrastructure;
 
@@ -18,9 +19,10 @@ public static class Registry
     
     public static void Register(ContainerBuilder builder)
     {
-        builder.RegisterType<MemoryDataContext>().As<IMemoryDataContext>().SingleInstance();
+        builder.RegisterType<OperatorProcessor>().As<IOperatorProcessor>().SingleInstance();
+        builder.RegisterType<BotProcessor>().As<IBotProcessor>().SingleInstance();
         
-        builder.RegisterType<OperatorStream>().As<IOperatorStream>().SingleInstance();
+        builder.RegisterType<MemoryDataContext>().As<IMemoryDataContext>().SingleInstance();
         
         var capacity = new BoundedChannelOptions(100);
         builder.Register(_ => Channel.CreateBounded<SendMessageRequest>(capacity))

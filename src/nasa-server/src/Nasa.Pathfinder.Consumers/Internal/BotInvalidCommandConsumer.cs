@@ -1,12 +1,21 @@
 using Nasa.Pathfinder.Consumers.Contracts;
 using Nasa.Pathfinder.Domain.Interactions;
+using Nasa.Pathfinder.Infrastructure.Contracts.Grpc;
+using Nasa.Pathfinder.Infrastructure.Contracts.Grpc.Requests;
+using Nasa.Pathfinder.Infrastructure.Contracts.Processors;
 
 namespace Nasa.Pathfinder.Consumers.Internal;
 
-internal class BotInvalidCommandConsumer : IBotConsumer<InvalidCommand>
+internal class BotInvalidCommandConsumer(IOperatorProcessor processor) : IBotConsumer<InvalidCommand>
 {
-    public async Task Consume(InvalidCommand command, CancellationToken ct = default)
+    public Task Consume(InvalidCommand command, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        var notificationText = "Invalid bot command!";
+        var request = new SendMessageRequest(command.BotId, command.ClientId, notificationText, true, 
+            true);
+        
+        processor.SendMessage(request);
+        
+        return Task.CompletedTask;
     }
 }

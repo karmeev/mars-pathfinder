@@ -5,6 +5,7 @@ using Nasa.Pathfinder.Domain.Bots;
 using Nasa.Pathfinder.Domain.Interactions;
 using Nasa.Pathfinder.Domain.Messages;
 using Nasa.Pathfinder.Facades.Internal;
+using Nasa.Pathfinder.Infrastructure.Contracts.Processors;
 using Nasa.Pathfinder.Services.Contracts;
 using Nasa.Pathfinder.Tests;
 
@@ -16,7 +17,7 @@ public class MessageFacadeTests
     private Mock<IBotRepository> _repositoryMock;
     private Mock<IMessageDecoderService> _decoderServiceMock;
     private Mock<IWorldMapService> _worldMapServiceMock;
-    private Mock<IBotProcessorService> _processorServiceMock;
+    private Mock<IBotProcessor> _processorServiceMock;
     
     [SetUp]
     public void Setup()
@@ -24,7 +25,7 @@ public class MessageFacadeTests
         _repositoryMock = new Mock<IBotRepository>();
         _decoderServiceMock = new Mock<IMessageDecoderService>();
         _worldMapServiceMock = new Mock<IWorldMapService>();
-        _processorServiceMock = new Mock<IBotProcessorService>();
+        _processorServiceMock = new Mock<IBotProcessor>();
     }
 
     [Test]
