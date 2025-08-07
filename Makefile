@@ -11,6 +11,9 @@ UNIT_TEST_PROJECTS := \
 INTEGRATION_TEST_PROJECTS := \
     Nasa.IntegrationTests.Pathfinder/Nasa.IntegrationTests.Pathfinder.csproj \
 
+space:
+	docker compose up cd/production/docker-compose.yaml -d 
+
 coverage:
 	@for proj in $(UNIT_TEST_PROJECTS); do \
 		echo "Running coverage for $$proj..."; \

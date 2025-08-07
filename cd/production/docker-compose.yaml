@@ -1,0 +1,7 @@
+services:
+  nasa-server:
+    image: ghcr.io/karmeev/mars-pathfinder:1.0.0
+    container_name: nasa-server
+    ports:
+      - "8080:8080"
+      - "8081:8081"
