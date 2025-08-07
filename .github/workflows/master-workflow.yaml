@@ -25,9 +25,15 @@ jobs:
       - name: Read version
         id: version
         run: |
-          VERSION_TAG="v$(cat VERSION.txt)"
-          echo "tag=$VERSION_TAG" >> $GITHUB_OUTPUT
-
+          VERSION=$(cat VERSION.txt)
+          if [ -z "$VERSION" ]; then
+            echo "❌ VERSION.txt is empty!"
+            exit 1
+          fi
+          VERSION_TAG="v$VERSION"
+          echo "Detected version: $VERSION_TAG"
+          echo "tag=$VERSION_TAG" >> "$GITHUB_OUTPUT"
+      
       - name: Restore and Build
         run: |
           dotnet restore ./src/nasa-server/src/nasa-server.sln
