@@ -1,10 +1,10 @@
+using Nasa.Pathfinder.Consumers.Contracts;
 using Nasa.Pathfinder.Domain.Interactions;
-using Nasa.Pathfinder.Services.Consumers.Interfaces;
 using Nasa.Pathfinder.Services.Contracts;
 
-namespace Nasa.Pathfinder.Services.Consumers;
+namespace Nasa.Pathfinder.Consumers.Internal;
 
-public class BotConsumer(
+internal class BotConsumer(
     IBotProcessorService processor,
     IWorldMapService worldMap) : IBotConsumer<MoveCommand>
 {

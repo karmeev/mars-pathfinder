@@ -1,12 +1,12 @@
+using Nasa.Pathfinder.Consumers.Contracts;
 using Nasa.Pathfinder.Domain.Interactions;
 using Nasa.Pathfinder.Infrastructure.Contracts.Grpc;
 using Nasa.Pathfinder.Infrastructure.Contracts.Grpc.Requests;
-using Nasa.Pathfinder.Services.Consumers.Interfaces;
 using Nasa.Pathfinder.Services.Contracts;
 
-namespace Nasa.Pathfinder.Services.Consumers;
+namespace Nasa.Pathfinder.Consumers.Internal;
 
-public class BotStandConsumer(
+internal class BotStandConsumer(
     IMessageDecoderService messageDecoder,
     IOperatorStream stream) : IBotConsumer<StandCommand>
 {

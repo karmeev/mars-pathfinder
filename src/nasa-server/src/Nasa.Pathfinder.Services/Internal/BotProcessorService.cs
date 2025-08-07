@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using Autofac;
+using Nasa.Pathfinder.Consumers.Contracts;
 using Nasa.Pathfinder.Domain.Interactions;
-using Nasa.Pathfinder.Services.Consumers.Interfaces;
 using Nasa.Pathfinder.Services.Contracts;
 
 namespace Nasa.Pathfinder.Services.Internal;

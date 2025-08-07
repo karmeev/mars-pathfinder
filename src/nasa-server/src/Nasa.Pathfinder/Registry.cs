@@ -37,6 +37,7 @@ public static class Registry
         Services.Registry.Register(builder);
         Data.Registry.Register(builder);
         Infrastructure.Registry.Register(builder);
+        Consumers.Registry.Register(builder);
         builder.RegisterType<MessageHub>().SingleInstance();
     }
 }

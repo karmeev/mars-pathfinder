@@ -1,6 +1,6 @@
 using Nasa.Pathfinder.Domain.Interactions;
 
-namespace Nasa.Pathfinder.Services.Consumers.Interfaces;
+namespace Nasa.Pathfinder.Consumers.Contracts;
 
 public interface IBotConsumer<T> where T: class, IBotCommand
 {

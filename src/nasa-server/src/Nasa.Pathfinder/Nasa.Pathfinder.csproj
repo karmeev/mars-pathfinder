@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Autofac" Version="8.3.0" />
+        <PackageReference Include="Autofac" Version="8.4.0" />
         <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
         <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
         <PackageReference Include="Grpc.Tools" Version="2.72.0">
@@ -29,6 +29,7 @@
     </ItemGroup>
     
     <ItemGroup>
+      <ProjectReference Include="..\Nasa.Pathfinder.Consumers\Nasa.Pathfinder.Consumers.csproj" />
       <ProjectReference Include="..\Nasa.Pathfinder.Data\Nasa.Pathfinder.Data.csproj" />
       <ProjectReference Include="..\Nasa.Pathfinder.Facades.Contracts\Nasa.Pathfinder.Facades.Contracts.csproj" />
       <ProjectReference Include="..\Nasa.Pathfinder.Facades\Nasa.Pathfinder.Facades.csproj" />

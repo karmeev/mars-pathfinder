@@ -1,9 +1,9 @@
+using Nasa.Pathfinder.Consumers.Contracts;
 using Nasa.Pathfinder.Domain.Interactions;
-using Nasa.Pathfinder.Services.Consumers.Interfaces;
 
-namespace Nasa.Pathfinder.Services.Consumers;
+namespace Nasa.Pathfinder.Consumers.Internal;
 
-public class BotInvalidCommandConsumer : IBotConsumer<InvalidCommand>
+internal class BotInvalidCommandConsumer : IBotConsumer<InvalidCommand>
 {
     public async Task Consume(InvalidCommand command, CancellationToken ct = default)
     {

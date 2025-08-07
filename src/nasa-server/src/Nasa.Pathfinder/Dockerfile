@@ -22,7 +22,8 @@ COPY ["src/nasa-server/src/Nasa.Pathfinder.Infrastructure/", "nasa-server/src/Na
 COPY ["src/nasa-server/src/Nasa.Pathfinder.Infrastructure.Contracts/", "nasa-server/src/Nasa.Pathfinder.Infrastructure.Contracts/"]
 COPY ["src/nasa-server/src/Nasa.Pathfinder.Services/", "nasa-server/src/Nasa.Pathfinder.Services/"]
 COPY ["src/nasa-server/src/Nasa.Pathfinder.Services.Contracts/", "nasa-server/src/Nasa.Pathfinder.Services.Contracts/"]
-COPY ["src/nasa-server/src/Nasa.Pathfinder.Services.Consumers/", "nasa-server/src/Nasa.Pathfinder.Services.Consumers/"]
+COPY ["src/nasa-server/src/Nasa.Pathfinder.Consumers/", "nasa-server/src/Nasa.Pathfinder.Consumers/"]
+COPY ["src/nasa-server/src/Nasa.Pathfinder.Consumers.Contracts/", "nasa-server/src/Nasa.Pathfinder.Consumers.Contracts/"]
 
 RUN dotnet restore "nasa-server/src/Nasa.Pathfinder/Nasa.Pathfinder.csproj"
 COPY . .
