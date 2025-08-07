@@ -1,5 +1,5 @@
 <div align="center">
-<img src="res/img.png" alt="drawing" width="700px"/></br>
+<img src="res/nasa.png" alt="drawing" width="350px"/></br>
 
 ### Mars Pathfinder
 
