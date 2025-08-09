@@ -18,17 +18,17 @@ public class WorldMapServiceTests
     public void Setup()
     {
         _mockMapRepository = new Mock<IMapRepository>();
-        _mockGraveRepository = new Mock<IFuneralRepository>();
+        _mockFuneralRepository = new Mock<IFuneralRepository>();
     }
 
     private Mock<IMapRepository> _mockMapRepository;
-    private Mock<IFuneralRepository> _mockGraveRepository;
+    private Mock<IFuneralRepository> _mockFuneralRepository;
 
     [Test]
     public void CalculateDesiredPosition_WhenWeGotListOfCommands_ShouldReturnsDestination()
     {
         TestRunner<WorldMapService, Position>
-            .Arrange(() => new WorldMapService(_mockMapRepository.Object, _mockGraveRepository.Object))
+            .Arrange(() => new WorldMapService(_mockMapRepository.Object, _mockFuneralRepository.Object))
             .Act(sut =>
             {
                 var currentPosition = new Position
@@ -65,7 +65,7 @@ public class WorldMapServiceTests
     public void CalculateDesiredPosition_WhenDesiredPositionOutOfGrid_ShouldReturnsDestination()
     {
         TestRunner<WorldMapService, Position>
-            .Arrange(() => new WorldMapService(_mockMapRepository.Object, _mockGraveRepository.Object))
+            .Arrange(() => new WorldMapService(_mockMapRepository.Object, _mockFuneralRepository.Object))
             .Act(sut =>
             {
                 var currentPosition = new Position
@@ -125,7 +125,7 @@ public class WorldMapServiceTests
                         SizeY = 50,
                     });
 
-                _mockGraveRepository.Setup(x =>
+                _mockFuneralRepository.Setup(x =>
                         x.GetFuneralsAsync(mapId, It.IsAny<CancellationToken>()))
                     .ReturnsAsync(new List<Funeral>
                     {
@@ -138,7 +138,7 @@ public class WorldMapServiceTests
                         }
                     });
 
-                return new WorldMapService(_mockMapRepository.Object, _mockGraveRepository.Object);
+                return new WorldMapService(_mockMapRepository.Object, _mockFuneralRepository.Object);
             })
             .ActAsync(async sut => await sut.TryReachPosition(mapId, desiredPosition))
             .ThenAssertAsync(position =>
@@ -171,11 +171,11 @@ public class WorldMapServiceTests
                         SizeY = 50,
                     });
 
-                _mockGraveRepository.Setup(x =>
+                _mockFuneralRepository.Setup(x =>
                         x.GetFuneralsAsync(mapId, It.IsAny<CancellationToken>()))
                     .ReturnsAsync(new List<Funeral> { FakeFuneral.Make(mapId) });
 
-                return new WorldMapService(_mockMapRepository.Object, _mockGraveRepository.Object);
+                return new WorldMapService(_mockMapRepository.Object, _mockFuneralRepository.Object);
             })
             .ActAsync(async sut => await sut.TryReachPosition(mapId, desiredPosition))
             .ThenAssertAsync(position =>
@@ -208,11 +208,11 @@ public class WorldMapServiceTests
                         SizeY = 50,
                     });
 
-                _mockGraveRepository.Setup(x =>
+                _mockFuneralRepository.Setup(x =>
                         x.GetFuneralsAsync(mapId, It.IsAny<CancellationToken>()))
                     .ReturnsAsync(new List<Funeral> { FakeFuneral.Make(mapId) });
 
-                return new WorldMapService(_mockMapRepository.Object, _mockGraveRepository.Object);
+                return new WorldMapService(_mockMapRepository.Object, _mockFuneralRepository.Object);
             })
             .ActAsync(async sut => await sut.TryReachPosition(mapId, desiredPosition))
             .ThenAssertAsync(position =>
