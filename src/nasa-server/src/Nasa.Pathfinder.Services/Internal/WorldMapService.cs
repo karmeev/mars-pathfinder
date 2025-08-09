@@ -8,7 +8,7 @@ namespace Nasa.Pathfinder.Services.Internal;
 
 internal class WorldMapService(
     IMapRepository mapRepository,
-    IFuneralRepository funeralRepository) : IWorldMapService
+    IGraveRepository graveRepository) : IWorldMapService
 {
     public Position CalculateDesiredPosition(Position currentPosition, Stack<IOperatorCommand> commands)
     {
@@ -68,8 +68,8 @@ internal class WorldMapService(
     public async Task<IPositionProject> TryReachPosition(string mapId, Position position, 
         CancellationToken ct = default)
     {
-        var funerals = await funeralRepository.GetFuneralsAsync(mapId, ct);
-        var isTrap = funerals.Any(x => x.Value == position);
+        var graves = await graveRepository.GetGravesAsync(mapId, ct);
+        var isTrap = graves.Any(x => x.Value == position);
         
         var isOutOfMap = false;
         var mapInfo = await mapRepository.TryGetAsync(mapId, ct);
@@ -79,7 +79,7 @@ internal class WorldMapService(
             isOutOfMap = true;
         }
         
-        if (isTrap && !isOutOfMap)
+        if (isTrap)
         {
             return PositionProject.NotChanged();
         }

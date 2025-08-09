@@ -24,7 +24,7 @@ public class Registry
         builder.Register(c =>
         {
             var memoryContext = c.Resolve<IMemoryDataContext>();
-            return new FuneralRepository(memoryContext);
-        }).As<IFuneralRepository>();
+            return new GraveRepository(memoryContext);
+        }).As<IGraveRepository>();
     }
 }

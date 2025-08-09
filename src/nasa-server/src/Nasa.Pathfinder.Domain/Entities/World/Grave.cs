@@ -3,7 +3,7 @@ using Nasa.Pathfinder.Domain.World;
 
 namespace Nasa.Pathfinder.Domain.Entities.World;
 
-public class Funeral : IEntity
+public class Grave : IEntity
 {
     public string Id { get; set; }
     public Guid ETag { get; set; }
