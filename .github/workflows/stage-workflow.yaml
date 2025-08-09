@@ -40,6 +40,8 @@ jobs:
         run: |
           docker build -t $IMAGE_NAME:${{ steps.tag.outputs.tag }} -f src/nasa-server/src/Nasa.Pathfinder/kub.Dockerfile .
           docker push $IMAGE_NAME:${{ steps.tag.outputs.tag }}
+          docker build -t $IMAGE_NAME:stage -f src/nasa-server/src/Nasa.Pathfinder/kub.Dockerfile .
+          docker push $IMAGE_NAME:stage
   
   integration-tests:
     needs: build
