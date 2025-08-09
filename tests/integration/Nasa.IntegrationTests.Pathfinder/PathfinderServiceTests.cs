@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using ErrorOr;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Net.Client;
@@ -177,45 +178,233 @@ public class PathfinderServiceTests
     }
 
     [Test]
-    public async Task SendMessage_SendCommandAndWaitResult_ShouldReturnMessageWithBotStatus()
+    [Ignore("Right now, it's only for manual starting")]
+    public async Task SendMessage_ApplyTestTaskBehavior_ShouldReturn3DifferentMessages()
     {
-        await TestRunner<Client, SendMessageResponse>
-            .Arrange(() => new Client(_channel))
+        const string message1 = "RFRFRFRF";
+        const string message2 = "FRRFLLFFRRFLL";
+        const string message3 = "LLFFFLFLFL";
+        var botsMessage = new Dictionary<string, string>();
+        var botsPositions = new Dictionary<string, Position>
+        {
+            { message1, new Position { X = 1, Y = 1, Direction = "E" } },
+            { message2, new Position { X = 3, Y = 3, Direction = "N" } },
+            { message3, new Position { X = 2, Y = 4, Direction = "S" } },
+        };
+        
+        await TestRunner<Client, List<ErrorOr<SendMessageResponse>>>
+            .Arrange(() =>
+            {
+                var client = new Client(_channel);
+                return client;
+            })
             .ActAsync(async sut =>
             {
-                var bot = sut.GetBots(new Empty()).Bots.First();
-                bot = sut.SelectBot(new SelectBotRequest
-                {
-                    BotId = bot.Id
-                }).Bot;
+                var responses = new List<ErrorOr<SendMessageResponse>>();
 
-                var stream = sut.SendMessage(new Metadata
+                try
                 {
-                    { "TraceId", Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString() },
-                    { "clientId", Guid.NewGuid().ToString() }
-                });
+                    //<--- 3 Bots case --->
+                    //<--- First bot --->
 
-                var cts = new CancellationTokenSource();
+                    var first = sut.GetBots(new Empty()).Bots.First(x => x.Status == "Available");
+                    var bot = sut.SelectBot(new SelectBotRequest
+                    {
+                        BotId = first.Id
+                    }).Bot;
 
-                await stream.RequestStream.WriteAsync(new SendMessageRequest
+                    var stream = sut.SendMessage(new Metadata
+                    {
+                        { "TraceId", Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString() },
+                        { "clientId", Guid.NewGuid().ToString() }
+                    });
+
+                    Thread.Sleep(1000);
+
+                    botsMessage.Add(bot.Id, message1);
+                    await stream.RequestStream.WriteAsync(new SendMessageRequest
+                    {
+                        BotId = bot.Id,
+                        Message = message1
+                    }, CancellationToken.None);
+
+                    Thread.Sleep(2000);
+
+                    var cts = new CancellationTokenSource();
+                    var token = cts.Token;
+
+                    try
+                    {
+                        while (await stream.ResponseStream.MoveNext(token))
+                        {
+                            var response = stream.ResponseStream.Current;
+                            responses.Add(response);
+                            break;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        responses.Add(Error.Failure(ex.Message));
+                    }
+
+                    await stream.RequestStream.CompleteAsync();
+
+                    //<--- Second bot --->
+
+                    var second = sut.GetBots(new Empty()).Bots.First(x => x.Status == "Available");
+                    bot = sut.SelectBot(new SelectBotRequest
+                    {
+                        BotId = second.Id
+                    }).Bot;
+
+                    stream = sut.SendMessage(new Metadata
+                    {
+                        { "TraceId", Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString() },
+                        { "clientId", Guid.NewGuid().ToString() }
+                    });
+
+                    Thread.Sleep(1000);
+
+                    botsMessage.Add(bot.Id, message2);
+                    await stream.RequestStream.WriteAsync(new SendMessageRequest
+                    {
+                        BotId = bot.Id,
+                        Message = message2
+                    }, CancellationToken.None);
+
+                    Thread.Sleep(2000);
+
+                    try
+                    {
+                        while (await stream.ResponseStream.MoveNext(token))
+                        {
+                            var response = stream.ResponseStream.Current;
+                            responses.Add(response);
+                            break;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        responses.Add(Error.Failure(ex.Message));
+                    }
+
+                    await stream.RequestStream.CompleteAsync();
+
+                    //<--- Third bot --->
+
+                    var third = sut.GetBots(new Empty()).Bots.First(x => x.Status == "Available");
+                    bot = sut.SelectBot(new SelectBotRequest
+                    {
+                        BotId = third.Id
+                    }).Bot;
+
+                    stream = sut.SendMessage(new Metadata
+                    {
+                        { "TraceId", Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString() },
+                        { "clientId", Guid.NewGuid().ToString() }
+                    });
+
+                    Thread.Sleep(1000);
+
+                    botsMessage.Add(bot.Id, message3);
+                    await stream.RequestStream.WriteAsync(new SendMessageRequest
+                    {
+                        BotId = bot.Id,
+                        Message = message3
+                    }, CancellationToken.None);
+
+                    Thread.Sleep(2000);
+
+                    try
+                    {
+                        while (await stream.ResponseStream.MoveNext(token))
+                        {
+                            var response = stream.ResponseStream.Current;
+                            responses.Add(response);
+                            break;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        responses.Add(Error.Failure(ex.Message));
+                    }
+
+                    await stream.RequestStream.CompleteAsync();
+                }
+                catch (Exception ex)
                 {
-                    BotId = bot.Id,
-                    Message = "RFRFRFRF"
-                }, cts.Token);
+                    responses.Add(Error.Failure(ex.Message));
+                }
                 
-                await stream.RequestStream.CompleteAsync();
-
-                while (await stream.ResponseStream.MoveNext(cts.Token))
+                return responses;
+            })
+            .ThenAssertAsync(responses =>
+            {
+                var errors = new List<Error>();
+                
+                foreach (var response in responses)
                 {
-                    var response = stream.ResponseStream.Current;
-                    return response;
+                    if (response.IsError)
+                    {
+                        errors.Add(response.FirstError);
+                    }
                 }
 
-                throw new Exception("No response received from gRPC stream.");
-            })
-            .ThenAssertAsync(_ =>
-            {
-                Assert.Pass();
+                try
+                {
+                    var client = new Client(_channel);
+                    var bots = client.GetBots(new Empty()).Bots;
+
+                    foreach (var bot in bots)
+                    {
+                        if (bot.Status == "Available")
+                            errors.Add(Error.Unexpected("Bot is available",
+                                $"Bot with id ({bot.Id}) is still available instead of be acquired"));
+
+                        var message = botsMessage[bot.Id];
+
+                        var pattern = "";
+                        switch (message)
+                        {
+                            case message1:
+                                pattern = message1;
+                                break;
+                            case message2:
+                                pattern = message2;
+                                break;
+                            case message3:
+                                pattern = message3;
+                                if (bot.Status != "Dead")
+                                {
+                                    errors.Add(Error.Unexpected("Incorrect status",
+                                        $"Bot with id ({bot.Id}) must dead, but it still alive!"));
+                                }
+                                break;
+                        }
+
+                        if (bot.Position.X != botsPositions[pattern].X || bot.Position.Y != botsPositions[pattern].Y ||
+                            bot.Position.Direction != botsPositions[pattern].Direction)
+                        {
+                            errors.Add(Error.Unexpected("Incorrect position",
+                                $"Bot with id ({bot.Id}) has incorrect position"));
+                        }
+                    }
+
+                }
+                finally
+                {
+                    if (!errors.Any()) Assert.Pass();
+                    
+                    if (errors.Count > 0)
+                    {
+                        foreach (var error in errors)
+                        {
+                            Console.WriteLine("{0}: {1}", error.Code, error.Description);
+                        }
+                    
+                        Assert.Fail();
+                    }
+                }
             });
     }
     

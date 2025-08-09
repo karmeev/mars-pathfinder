@@ -48,11 +48,12 @@ public class MessageHub(Channel<SendMessageRequest> channel)
             {
                 if (queue.IsEmpty)
                 {
-                    await Task.Delay(20, token);
+                    await Task.Delay(5, token);
                     continue;
                 }
 
-                if (queue.TryDequeue(out var message)) await NotifyClient(message);
+                if (queue.TryDequeue(out var message)) 
+                    await NotifyClient(message);
             }
         }, token);
     }

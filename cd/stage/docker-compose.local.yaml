@@ -1,0 +1,6 @@
+services:
+  nasa-server:
+    image: ghcr.io/karmeev/mars-pathfinder:stage
+    container_name: nasa-server
+    ports:
+      - "5000:5000"

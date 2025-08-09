@@ -17,8 +17,8 @@ public class MigrationBackgroundTask(
         {
             Id = mapId,
             ETag = Guid.NewGuid(),
-            SizeX = 50,
-            SizeY = 50,
+            SizeX = 5,
+            SizeY = 3,
         };
         
         await context.PushAsync(mapInfo, cancellationToken);
@@ -35,7 +35,7 @@ public class MigrationBackgroundTask(
             {
                 X = 1,
                 Y = 1,
-                Direction = Direction.N
+                Direction = Direction.E
             }
         }, cancellationToken);
 
@@ -49,8 +49,8 @@ public class MigrationBackgroundTask(
             LastWords = "There is only the Emperor, and he is our shield and protector.",
             Position = new Position
             {
-                X = 10,
-                Y = 6,
+                X = 3,
+                Y = 2,
                 Direction = Direction.N
             }
         }, cancellationToken);
@@ -65,9 +65,9 @@ public class MigrationBackgroundTask(
             LastWords = "Blessed is the mind too small for doubt.",
             Position = new Position
             {
-                X = 5,
-                Y = 5,
-                Direction = Direction.N
+                X = 0,
+                Y = 3,
+                Direction = Direction.W
             }
         }, cancellationToken);
     }

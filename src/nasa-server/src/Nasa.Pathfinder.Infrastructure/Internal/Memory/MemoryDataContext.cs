@@ -40,14 +40,20 @@ internal class MemoryDataContext(IMemoryCache cache) : IMemoryDataContext, IDisp
         }
     }
 
-    public Task<T?> GetAsync<T>(string id, CancellationToken ct = default) where T : class, IEntity
+    public async Task<T?> GetAsync<T>(string id, CancellationToken ct = default) where T : class, IEntity
     {
+        await Task.CompletedTask;
+        
         var lockObj = GetEntityLock<T>(id);
         lock (lockObj)
         {
             var result = Get<T>(id);
-            if (result.IsError) return null;
-            return Task.FromResult(result.Value);
+            if (result.IsError) 
+                return null;
+
+            var entity = result.Value;
+            
+            return entity;
         }
     }
 
