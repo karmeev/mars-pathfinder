@@ -29,6 +29,21 @@ internal class MemoryDataContext(IMemoryCache cache) : IMemoryDataContext, IDisp
 
         return Task.CompletedTask;
     }
+    
+    public Task PushManyAsync<T>(IEnumerable<T> entry, CancellationToken ct = default) where T : class, IEntity
+    {
+        if (ct.IsCancellationRequested)
+            return Task.CompletedTask;
+
+        foreach (var entity in entry)
+        {
+            var id = GetInternalId<T>(entity.Id);
+            cache.Set(id, entity);
+            _types.Add(id, entity.GetType());
+        }
+
+        return Task.CompletedTask;
+    }
 
     public Task<ErrorOr<T>> UpdateAsync<T>(T entry, CancellationToken ct = default) where T : class, IEntity
     {
@@ -40,14 +55,20 @@ internal class MemoryDataContext(IMemoryCache cache) : IMemoryDataContext, IDisp
         }
     }
 
-    public Task<T?> GetAsync<T>(string id, CancellationToken ct = default) where T : class, IEntity
+    public async Task<T?> GetAsync<T>(string id, CancellationToken ct = default) where T : class, IEntity
     {
+        await Task.CompletedTask;
+        
         var lockObj = GetEntityLock<T>(id);
         lock (lockObj)
         {
             var result = Get<T>(id);
-            if (result.IsError) return null;
-            return Task.FromResult(result.Value);
+            if (result.IsError) 
+                return null;
+
+            var entity = result.Value;
+            
+            return entity;
         }
     }
 

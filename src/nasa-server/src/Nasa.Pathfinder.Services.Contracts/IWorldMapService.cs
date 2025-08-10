@@ -5,7 +5,6 @@ namespace Nasa.Pathfinder.Services.Contracts;
 
 public interface IWorldMapService
 {
-    Position CalculateDesiredPosition(Position currentPosition, Stack<IOperatorCommand> commands);
-    Task<IPositionProject> TryReachPosition(string mapId, Position position, 
-        CancellationToken ct = default);
+    Task<IPositionProject> ReachPosition(string mapId, Position currentPosition, 
+        Stack<IOperatorCommand> commands, CancellationToken ct = default);
 }

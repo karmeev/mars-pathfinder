@@ -1,3 +1,4 @@
+using System.Numerics;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Nasa.Pathfinder.Domain.Messages;
@@ -25,9 +26,17 @@ public class PathfinderGrpcService(
         };
     }
 
-    public override async Task<GetBotsResponse> GetBots(Empty request, ServerCallContext context)
+    public override async Task<CreateWorldResponse> CreateWorld(CreateWorldRequest request, ServerCallContext context)
     {
-        var result = await botFacade.GetBotsAsync(context.CancellationToken);
+        var vector = new Vector2(request.SizeX, request.SizeY);
+        var bots = Request.MapFromCreateWorldRequest(request);
+        var result = await botFacade.CreateWorldAsync(vector, bots, context.CancellationToken);
+        return Response.MapToCreateWorldResponse(result);
+    }
+
+    public override async Task<GetBotsResponse> GetBots(GetBotsRequest request, ServerCallContext context)
+    {
+        var result = await botFacade.GetBotsAsync(request.MapId, context.CancellationToken);
 
         var response = Response.MapToGetBotsResponse(result);
         return response;

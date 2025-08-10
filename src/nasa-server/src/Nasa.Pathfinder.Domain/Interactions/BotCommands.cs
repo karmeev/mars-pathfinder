@@ -1,4 +1,3 @@
-using Nasa.Pathfinder.Domain.Bots;
 using Nasa.Pathfinder.Domain.Entities.Bots;
 using Nasa.Pathfinder.Domain.World;
 
@@ -12,13 +11,13 @@ public interface IBotCommand
 public record MoveCommand(
     string ClientId,
     Bot Bot,
-    Position DesiredPosition,
+    Stack<IOperatorCommand> OperatorCommands,
     Guid CorrelationId = default) : IBotCommand;
 
 public record WalkCommand(
     string ClientId,
     string BotId,
-    Position DesiredPosition,
+    Position CurrentPosition,
     Guid CorrelationId = default) : IBotCommand;
 
 public record StandCommand(
@@ -30,9 +29,8 @@ public record StandCommand(
 public record DeadCommand(
     string ClientId,
     string BotId,
-    Position DesiredPosition,
     string MapId,
-    string LastWords,
+    Position CurrentPosition,
     Guid CorrelationId = default) : IBotCommand;
 
 public record InvalidCommand(

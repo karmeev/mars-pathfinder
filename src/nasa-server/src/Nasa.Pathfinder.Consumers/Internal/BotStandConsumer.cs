@@ -14,7 +14,7 @@ internal class BotStandConsumer(
     {
         var notificationText = messageDecoder.EncodeBotMessage(command.CurrentPosition, false);
         var request = new SendMessageRequest(command.ClientId, command.BotId, notificationText, false,
-            false, string.Empty);
+            false);
         processor.SendMessage(request);
     }
 }

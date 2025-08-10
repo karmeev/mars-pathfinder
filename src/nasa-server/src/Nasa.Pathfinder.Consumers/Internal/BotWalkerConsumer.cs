@@ -14,10 +14,10 @@ internal class BotWalkerConsumer(
 {
     public async Task Consume(WalkCommand command, CancellationToken ct = default)
     {
-        await repository.ChangeBotPositionAsync(command.BotId, command.DesiredPosition, ct);
-        var notificationText = messageDecoder.EncodeBotMessage(command.DesiredPosition, false);
+        await repository.ChangeBotPositionAsync(command.BotId, command.CurrentPosition, ct);
+        var notificationText = messageDecoder.EncodeBotMessage(command.CurrentPosition, false);
         var request = new SendMessageRequest(command.ClientId, command.BotId, notificationText, false,
-            false, string.Empty);
+            false);
         processor.SendMessage(request);
     }
 }

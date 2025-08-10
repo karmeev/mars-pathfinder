@@ -3,15 +3,28 @@ namespace Nasa.IntegrationTests;
 public class TestRunner<TSut, TResult>
 {
     private readonly Func<TSut> _arrange;
+    private readonly Func<Task<TSut>> _arrangeAsync;
     private TResult? _result;
     private TSut? _sut;
 
     private TestRunner(Func<TSut> arrange)
     {
         _arrange = arrange;
+        _arrangeAsync = null;
+    }
+    
+    private TestRunner(Func<Task<TSut>> arrange)
+    {
+        _arrange = null;
+        _arrangeAsync = arrange;
     }
 
     public static TestRunner<TSut, TResult> Arrange(Func<TSut> arrange)
+    {
+        return new TestRunner<TSut, TResult>(arrange);
+    }
+    
+    public static TestRunner<TSut, TResult> ArrangeAsync(Func<Task<TSut>> arrange)
     {
         return new TestRunner<TSut, TResult>(arrange);
     }
@@ -25,7 +38,7 @@ public class TestRunner<TSut, TResult>
 
     public async Task<TestRunner<TSut, TResult>> ActAsync(Func<TSut, Task<TResult>> act)
     {
-        _sut = _arrange();
+        _sut = _arrangeAsync is null ? _arrange() : await _arrangeAsync();
         _result = await act(_sut);
         return this;
     }

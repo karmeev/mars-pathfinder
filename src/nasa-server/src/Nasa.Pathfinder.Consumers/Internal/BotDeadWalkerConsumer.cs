@@ -18,19 +18,19 @@ internal class BotDeadWalkerConsumer(
     public async Task Consume(DeadCommand command, CancellationToken ct = default)
     {
         await botRepository.ChangeBotStatusAsync(command.BotId, BotStatus.Dead, ct);
-        await botRepository.ChangeBotPositionAsync(command.BotId, command.DesiredPosition, ct);
+        await botRepository.ChangeBotPositionAsync(command.BotId, command.CurrentPosition, ct);
 
         var funeral = new Funeral
         {
             Id = Guid.CreateVersion7().ToString(),
             ETag = Guid.NewGuid(),
-            Value = command.DesiredPosition,
+            Value = command.CurrentPosition,
             MapId = command.MapId,
         };
         await funeralRepository.AddNewFuneral(funeral, ct);
-        var notificationText = messageDecoder.EncodeBotMessage(command.DesiredPosition, true);
+        var notificationText = messageDecoder.EncodeBotMessage(command.CurrentPosition, true);
         var request = new SendMessageRequest(command.ClientId, command.BotId, notificationText, true,
-            false, command.LastWords);
+            false);
         processor.SendMessage(request);
     }
 }
