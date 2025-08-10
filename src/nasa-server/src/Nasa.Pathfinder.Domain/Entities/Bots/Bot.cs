@@ -12,5 +12,4 @@ public class Bot : IEntity
     public BotStatus Status { get; set; }
     public Position Position { get; set; }
     public string MapId { get; set; }
-    public string LastWords { get; set; }
 }

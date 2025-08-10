@@ -10,15 +10,33 @@ namespace Nasa.Pathfinder.Data.Internal;
 
 internal class BotRepository(IDataContext dataContext) : IBotRepository
 {
+    public async Task AddRangeAsync(IEnumerable<Bot> bots, CancellationToken ct = default)
+    {
+        await dataContext.AcquireAsync<Bot>("all", ct);
+        try
+        {
+            foreach (var bot in bots)
+            {
+                bot.ETag = Guid.NewGuid();
+            }
+            
+            await dataContext.PushManyAsync(bots, ct);
+        }
+        finally
+        {
+            await dataContext.ReleaseAsync<Bot>("all", CancellationToken.None);
+        }
+    }
+    
     public async Task<Bot?> TryGetAsync(string botId, CancellationToken ct = default)
     {
         return await dataContext.GetAsync<Bot>(botId, ct);
     }
 
-    public async Task<IEnumerable<Bot>> GetBotsAsync(CancellationToken ct = default)
+    public async Task<IEnumerable<Bot>> GetBotsAsync(string mapId, CancellationToken ct = default)
     {
         var bots = await dataContext.GetAllAsync<Bot>(ct);
-        return bots;
+        return bots.Where(x => x.MapId == mapId);
     }
 
     public async Task<Bot?> ChangeBotStatusAsync(string botId, BotStatus status, CancellationToken ct = default)

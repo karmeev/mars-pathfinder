@@ -6,8 +6,23 @@ message PingResponse {
   bool IsSuccessful = 1;
 }
 
+message CreateWorldRequest {
+  int32 SizeX = 1;
+  int32 SizeY = 2;
+  repeated Bot Bots = 3;
+}
+
+message CreateWorldResponse {
+  string MapId = 1;
+}
+
+message GetBotsRequest {
+  string MapId = 1;
+}
+
 message GetBotsResponse {
-  repeated Bot Bots = 1;
+  string MapId = 1;
+  repeated Bot Bots = 2;
 }
 
 message SelectBotRequest {

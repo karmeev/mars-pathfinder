@@ -8,8 +8,9 @@ import "messages.proto";
 import "google/protobuf/empty.proto";
 
 service PathfinderService {
+  rpc CreateWorld(pathfinder.messages.CreateWorldRequest) returns(pathfinder.messages.CreateWorldResponse);
   rpc Ping(google.protobuf.Empty) returns(pathfinder.messages.PingResponse);
-  rpc GetBots(google.protobuf.Empty) returns(pathfinder.messages.GetBotsResponse);
+  rpc GetBots(pathfinder.messages.GetBotsRequest) returns(pathfinder.messages.GetBotsResponse);
   rpc SelectBot(pathfinder.messages.SelectBotRequest) returns(pathfinder.messages.SelectBotResponse);
   rpc ResetBot(pathfinder.messages.ResetBotRequest) returns(pathfinder.messages.ResetBotResponse);
   rpc SendMessage(stream pathfinder.messages.SendMessageRequest) returns (stream pathfinder.messages.SendMessageResponse);

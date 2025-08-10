@@ -68,4 +68,12 @@ public static class Response
         };
         return response;
     }
+
+    public static CreateWorldResponse MapToCreateWorldResponse(string mapId)
+    {
+        return new CreateWorldResponse
+        {
+            MapId = mapId
+        };
+    }
 }
