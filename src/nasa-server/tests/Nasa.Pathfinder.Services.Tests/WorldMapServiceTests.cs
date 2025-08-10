@@ -109,7 +109,7 @@ public class WorldMapServiceTests
         var desiredPosition = new Position
         {
             X = 1,
-            Y = 3,
+            Y = 2,
             Direction = Direction.W
         };
 

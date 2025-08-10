@@ -74,7 +74,7 @@ internal class WorldMapService(
         var isOutOfMap = false;
         var mapInfo = await mapRepository.TryGetAsync(mapId, ct);
 
-        if (position.X > mapInfo.SizeX || position.Y > mapInfo.SizeY)
+        if (position.X >= mapInfo.SizeX || position.Y >= mapInfo.SizeY)
         {
             isOutOfMap = true;
         }
