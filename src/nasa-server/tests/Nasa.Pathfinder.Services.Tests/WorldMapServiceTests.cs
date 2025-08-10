@@ -75,15 +75,35 @@ public class WorldMapServiceTests
                     Direction = Direction.W
                 };
 
+                _mockFuneralRepository.Setup(x => x.GetFuneralsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                    .ReturnsAsync([
+                        new Funeral
+                        {
+                            Id = "1",
+                            ETag = Guid.NewGuid(),
+                            MapId = "s",
+                            Value = new  Position
+                            {
+                                X = 2,
+                                Y = 4,
+                                Direction = Direction.E
+                            }
+                        }
+                    ]);
+
                 var commands = new Stack<IOperatorCommand>();
                 commands.Push(new MoveLeft());
+                
                 commands.Push(new MoveFront());
                 commands.Push(new MoveLeft());
+                
                 commands.Push(new MoveFront());
                 commands.Push(new MoveLeft());
+                
                 commands.Push(new MoveFront());
                 commands.Push(new MoveFront());
                 commands.Push(new MoveFront());
+                
                 commands.Push(new MoveLeft());
                 commands.Push(new MoveLeft());
 
@@ -108,9 +128,9 @@ public class WorldMapServiceTests
                 
         var desiredPosition = new Position
         {
-            X = 1,
-            Y = 2,
-            Direction = Direction.W
+            X = 2,
+            Y = 4,
+            Direction = Direction.S
         };
 
         await TestRunner<WorldMapService, IPositionProject>
@@ -121,8 +141,8 @@ public class WorldMapServiceTests
                     {
                         Id = mapId,
                         ETag = new Faker().Random.Guid(),
-                        SizeX = 50,
-                        SizeY = 50,
+                        SizeX = 5,
+                        SizeY = 3,
                     });
 
                 _mockFuneralRepository.Setup(x =>

@@ -79,7 +79,7 @@ internal class WorldMapService(
             isOutOfMap = true;
         }
         
-        if (isTrap && !isOutOfMap)
+        if (isTrap)
         {
             return PositionProject.NotChanged();
         }
