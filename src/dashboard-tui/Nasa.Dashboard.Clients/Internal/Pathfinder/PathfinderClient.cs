@@ -24,7 +24,7 @@ internal class PathfinderClient(PathfinderService.PathfinderServiceClient grpcSe
 
     public async Task<IEnumerable<Bot>> GetBotsAsync()
     {
-        var response = await grpcService.GetBotsAsync(new Empty(), GetHeader());
+        var response = await grpcService.GetBotsAsync(new GetBotsRequest{MapId = "1"}, GetHeader());
 
         return response.Bots.Select(bot => new Bot
         {

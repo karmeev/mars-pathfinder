@@ -25,7 +25,7 @@ internal class BotConsumer(
         if (project is PositionOutOfMap outOfMap)
         {
             var lost = new DeadCommand(command.ClientId, command.Bot.Id, command.Bot.MapId,
-                command.Bot.LastWords, outOfMap.Previous,  command.CorrelationId);
+                outOfMap.Previous,  command.CorrelationId);
             processor.Publish(lost);
             return;
         }

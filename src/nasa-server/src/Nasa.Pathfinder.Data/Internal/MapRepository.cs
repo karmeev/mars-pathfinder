@@ -10,4 +10,13 @@ internal class MapRepository(IDataContext context) : IMapRepository
     {
         return await context.GetAsync<MapInfo>(id, ct);
     }
+    
+    public async Task<MapInfo> AddAsync(MapInfo map, CancellationToken ct = default)
+    {
+        map.Id = Guid.NewGuid().ToString();
+        map.ETag = Guid.NewGuid();
+        
+        await context.PushAsync(map, ct);
+        return map;
+    }
 }

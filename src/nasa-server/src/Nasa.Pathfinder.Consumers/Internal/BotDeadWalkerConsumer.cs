@@ -30,7 +30,7 @@ internal class BotDeadWalkerConsumer(
         await funeralRepository.AddNewFuneral(funeral, ct);
         var notificationText = messageDecoder.EncodeBotMessage(command.CurrentPosition, true);
         var request = new SendMessageRequest(command.ClientId, command.BotId, notificationText, true,
-            false, command.LastWords);
+            false);
         processor.SendMessage(request);
     }
 }

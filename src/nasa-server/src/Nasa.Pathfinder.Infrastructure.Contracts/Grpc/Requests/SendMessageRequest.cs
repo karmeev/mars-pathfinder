@@ -5,5 +5,4 @@ public record SendMessageRequest(
     string BotId,
     string Message,
     bool IsLost,
-    bool IsInvalidCommand,
-    string LastWords);
+    bool IsInvalidCommand);

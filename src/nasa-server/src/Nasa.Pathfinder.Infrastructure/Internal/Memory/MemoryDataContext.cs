@@ -29,6 +29,21 @@ internal class MemoryDataContext(IMemoryCache cache) : IMemoryDataContext, IDisp
 
         return Task.CompletedTask;
     }
+    
+    public Task PushManyAsync<T>(IEnumerable<T> entry, CancellationToken ct = default) where T : class, IEntity
+    {
+        if (ct.IsCancellationRequested)
+            return Task.CompletedTask;
+
+        foreach (var entity in entry)
+        {
+            var id = GetInternalId<T>(entity.Id);
+            cache.Set(id, entity);
+            _types.Add(id, entity.GetType());
+        }
+
+        return Task.CompletedTask;
+    }
 
     public Task<ErrorOr<T>> UpdateAsync<T>(T entry, CancellationToken ct = default) where T : class, IEntity
     {

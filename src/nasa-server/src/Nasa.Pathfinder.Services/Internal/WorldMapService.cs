@@ -19,58 +19,59 @@ internal class WorldMapService(
             Y = currentPosition.Y,
             Direction = Direction.N
         };
-        var funerals = await funeralRepository.GetFuneralsAsync(mapId, ct);
         
-        IPositionProject position = new PositionChanged(currentPosition);
-
-        foreach (var command in commands)
+        try
         {
-            Position current;
-            switch (command)
+            var funerals = await funeralRepository.GetFuneralsAsync(mapId, ct);
+
+            IPositionProject position = new PositionChanged(currentPosition);
+
+            foreach (var command in commands)
             {
-                case MoveRight or MoveLeft:
-                    current = position.Position;
-                    
-                    current.Direction = Rotate(command, current.Direction);
-                    position = new PositionChanged(current);
-                    
-                    Console.WriteLine($"Coordinates: {position.Position.X} x {position.Position.Y}, " +
-                                      $"{position.Position.Direction}");
-                    break;
-                case MoveFront moveFrontCommand:
-                    current = position.Position;
-                    
-                    var newPosition = await CalculateMoveFront(current, moveFrontCommand, 
-                        funerals, mapId, ct);
-                    
-                    if (newPosition is PositionNotChanged)
-                    {
-                        Console.WriteLine($"Coordinates: {current.X} x {current.Y}, {current.Direction}");
-                        continue;
-                    }
-                    
-                    if (newPosition is PositionOutOfMap @out)
-                    {
-                        Console.WriteLine($"Coordinates: {newPosition.Position.X} x {newPosition.Position.Y}, " +
-                                          $"{newPosition.Position.Direction}");
-                        return @out;
-                    }
-            
-                    position = newPosition;
-                    Console.WriteLine($"Coordinates: {position.Position.X} x {position.Position.Y}, {position.Position.Direction}");
-                    break;
-                default:
-                    continue;
-            }
-        }
+                Position current;
+                switch (command)
+                {
+                    case MoveRight or MoveLeft:
+                        current = position.Position;
 
-        if (position.Position.X == start.X && position.Position.Y == start.Y && 
-            position.Position.Direction == start.Direction)
-        {
-            return new PositionNotChanged(currentPosition);
+                        current.Direction = Rotate(command, current.Direction);
+                        position = new PositionChanged(current);
+                        break;
+                    case MoveFront moveFrontCommand:
+                        current = position.Position;
+
+                        var newPosition = await CalculateMoveFront(current, moveFrontCommand,
+                            funerals, mapId, ct);
+
+                        if (newPosition is PositionNotChanged)
+                        {
+                            continue;
+                        }
+
+                        if (newPosition is PositionOutOfMap @out)
+                        {
+                            return @out;
+                        }
+
+                        position = newPosition;
+                        break;
+                    default:
+                        continue;
+                }
+            }
+
+            if (position.Position.X == start.X && position.Position.Y == start.Y &&
+                position.Position.Direction == start.Direction)
+            {
+                return new PositionNotChanged(currentPosition);
+            }
+
+            return position;
         }
-        
-        return position;
+        catch (Exception e)
+        {
+            return new PositionNotChanged(start);
+        }
     }
 
     private async Task<IPositionProject> CalculateMoveFront(Position position, MoveFront command, 

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Numerics;
 using ErrorOr;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
@@ -29,13 +30,16 @@ public class PathfinderServiceTests
             .Act(sut => sut.Ping(new Empty()))
             .Assert(response => Assert.That(response.IsSuccessful, Is.True));
     }
-    
+
     [Test]
     public void GetBots_ReturnsBotList_ShouldReturn3Bots()
     {
         TestRunner<Client, GetBotsResponse>
             .Arrange(() => new Client(_channel))
-            .Act(sut => sut.GetBots(new Empty()))
+            .Act(sut => sut.GetBots(new GetBotsRequest
+            {
+                MapId = "1"
+            }))
             .Assert(response =>
             {
                 Assert.Multiple(() =>
@@ -46,7 +50,7 @@ public class PathfinderServiceTests
                 });
             });
     }
-    
+
     [Test]
     public void SelectBot_ReturnsBot_ShouldReturnBot()
     {
@@ -54,22 +58,19 @@ public class PathfinderServiceTests
             .Arrange(() => new Client(_channel))
             .Act(sut =>
             {
-                var bot = sut.GetBots(new Empty()).Bots.First();
+                var bot = sut.GetBots(new GetBotsRequest
+                {
+                    MapId = "1"
+                }).Bots.First();
                 var result = sut.SelectBot(new SelectBotRequest
                 {
                     BotId = bot.Id
                 });
                 return result;
             })
-            .Assert(response =>
-            {
-                Assert.Multiple(() =>
-                {
-                    Assert.That(response.Bot, Is.Not.Null);
-                });
-            });
+            .Assert(response => { Assert.Multiple(() => { Assert.That(response.Bot, Is.Not.Null); }); });
     }
-    
+
     [Test]
     public void SelectBot_BotAlreadyReleased_ShouldFail()
     {
@@ -77,14 +78,17 @@ public class PathfinderServiceTests
             .Arrange(() => new Client(_channel))
             .Act(sut =>
             {
-                var bot = sut.GetBots(new Empty()).Bots.First();
+                var bot = sut.GetBots(new GetBotsRequest
+                {
+                    MapId = "1"
+                }).Bots.First();
                 try
                 {
                     sut.SelectBot(new SelectBotRequest
                     {
                         BotId = bot.Id
                     });
-                    
+
                     sut.SelectBot(new SelectBotRequest
                     {
                         BotId = bot.Id
@@ -104,7 +108,7 @@ public class PathfinderServiceTests
                 Assert.That(response.StatusCode, Is.EqualTo(StatusCode.InvalidArgument));
             });
     }
-    
+
     [Test]
     public void ResetBot_ReturnsBot_ShouldInvalidArgument()
     {
@@ -112,7 +116,10 @@ public class PathfinderServiceTests
             .Arrange(() => new Client(_channel))
             .Act(sut =>
             {
-                var bot = sut.GetBots(new Empty()).Bots.First();
+                var bot = sut.GetBots(new GetBotsRequest
+                {
+                    MapId = "1"
+                }).Bots.First();
                 bot = sut.SelectBot(new SelectBotRequest
                 {
                     BotId = bot.Id
@@ -122,18 +129,12 @@ public class PathfinderServiceTests
                 {
                     BotId = bot.Id
                 });
-                
+
                 return response;
             })
-            .Assert(response =>
-            {
-                Assert.Multiple(() =>
-                {
-                    Assert.That(response.Bot, Is.Not.Null);
-                });
-            });
+            .Assert(response => { Assert.Multiple(() => { Assert.That(response.Bot, Is.Not.Null); }); });
     }
-    
+
     [Test]
     public void ResetBot_BotIsFree_ShouldInvalidArgument()
     {
@@ -141,7 +142,10 @@ public class PathfinderServiceTests
             .Arrange(() => new Client(_channel))
             .Act(sut =>
             {
-                var bot = sut.GetBots(new Empty()).Bots.First();
+                var bot = sut.GetBots(new GetBotsRequest
+                {
+                    MapId = "1"
+                }).Bots.First();
                 bot = sut.SelectBot(new SelectBotRequest
                 {
                     BotId = bot.Id
@@ -158,7 +162,7 @@ public class PathfinderServiceTests
                     {
                         BotId = bot.Id
                     });
-                    
+
                     return null;
                 }
                 catch (RpcException ex)
@@ -178,7 +182,7 @@ public class PathfinderServiceTests
     }
 
     [Test]
-    [Ignore("Right now, it's only for manual starting")]
+    //[Ignore("Right now, it's only for manual starting")]
     public async Task SendMessage_ApplyTestTaskBehavior_ShouldReturn3DifferentMessages()
     {
         const string message1 = "RFRFRFRF";
@@ -192,10 +196,29 @@ public class PathfinderServiceTests
             { message3, new Position { X = 2, Y = 4, Direction = "S" } },
         };
         
+        var mapId = string.Empty;
+
+        string[] botNames = ["bot-12", "bot-14", "bot-15"];
+        
         await TestRunner<Client, List<ErrorOr<SendMessageResponse>>>
-            .Arrange(() =>
+            .ArrangeAsync(async () =>
             {
                 var client = new Client(_channel);
+                
+                var createWorldResponse = await client.CreateWorldAsync(new CreateWorldRequest
+                {
+                    SizeX = 5,
+                    SizeY = 3,
+                    Bots = 
+                    { 
+                        new Bot() { Name = botNames[0], Position = new Position { X = 1, Y = 1, Direction = "E"} },
+                        new Bot() { Name = botNames[1], Position = new Position { X = 3, Y = 2, Direction = "N"} },
+                        new Bot() { Name = botNames[2], Position = new Position { X = 0, Y = 3, Direction = "W"} }
+                    }
+                });
+                
+                mapId = createWorldResponse.MapId;
+                
                 return client;
             })
             .ActAsync(async sut =>
@@ -204,15 +227,55 @@ public class PathfinderServiceTests
 
                 try
                 {
-                    //<--- 3 Bots case --->
                     //<--- First bot --->
 
-                    var first = sut.GetBots(new Empty()).Bots.First(x => x.Status == "Available");
+                    var first = sut.GetBots(new GetBotsRequest
+                    {
+                        MapId = mapId
+                    }).Bots.First(x => x.Name == botNames[0]);
                     var bot = sut.SelectBot(new SelectBotRequest
                     {
                         BotId = first.Id
                     }).Bot;
+                    
+                    await StartWorkflowAsync(bot, message1);
 
+                    //<--- Second bot --->
+
+                    var second = sut.GetBots(new GetBotsRequest
+                    {
+                        MapId = mapId
+                    }).Bots.First(x => x.Name == botNames[1]);
+                    bot = sut.SelectBot(new SelectBotRequest
+                    {
+                        BotId = second.Id
+                    }).Bot;
+                    
+                    await StartWorkflowAsync(bot, message2);
+
+                    //<--- Third bot --->
+
+                    var third = sut.GetBots(new GetBotsRequest
+                    {
+                        MapId = mapId
+                    }).Bots.First(x => x.Name == botNames[2]);
+                    bot = sut.SelectBot(new SelectBotRequest
+                    {
+                        BotId = third.Id
+                    }).Bot;
+                    
+                    await StartWorkflowAsync(bot, message3);
+                }
+                catch (Exception ex)
+                {
+                    responses.Add(Error.Failure(ex.Message));
+                }
+
+                return responses;
+
+
+                async Task StartWorkflowAsync(Bot bot, string message)
+                {
                     var stream = sut.SendMessage(new Metadata
                     {
                         { "TraceId", Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString() },
@@ -221,11 +284,11 @@ public class PathfinderServiceTests
 
                     Thread.Sleep(1000);
 
-                    botsMessage.Add(bot.Id, message1);
+                    botsMessage.Add(bot.Id, message);
                     await stream.RequestStream.WriteAsync(new SendMessageRequest
                     {
                         BotId = bot.Id,
-                        Message = message1
+                        Message = message
                     }, CancellationToken.None);
 
                     Thread.Sleep(2000);
@@ -248,100 +311,12 @@ public class PathfinderServiceTests
                     }
 
                     await stream.RequestStream.CompleteAsync();
-
-                    //<--- Second bot --->
-
-                    var second = sut.GetBots(new Empty()).Bots.First(x => x.Status == "Available");
-                    bot = sut.SelectBot(new SelectBotRequest
-                    {
-                        BotId = second.Id
-                    }).Bot;
-
-                    stream = sut.SendMessage(new Metadata
-                    {
-                        { "TraceId", Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString() },
-                        { "clientId", Guid.NewGuid().ToString() }
-                    });
-
-                    Thread.Sleep(1000);
-
-                    botsMessage.Add(bot.Id, message2);
-                    await stream.RequestStream.WriteAsync(new SendMessageRequest
-                    {
-                        BotId = bot.Id,
-                        Message = message2
-                    }, CancellationToken.None);
-
-                    Thread.Sleep(2000);
-
-                    try
-                    {
-                        while (await stream.ResponseStream.MoveNext(token))
-                        {
-                            var response = stream.ResponseStream.Current;
-                            responses.Add(response);
-                            break;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        responses.Add(Error.Failure(ex.Message));
-                    }
-
-                    await stream.RequestStream.CompleteAsync();
-
-                    //<--- Third bot --->
-
-                    var third = sut.GetBots(new Empty()).Bots.First(x => x.Status == "Available");
-                    bot = sut.SelectBot(new SelectBotRequest
-                    {
-                        BotId = third.Id
-                    }).Bot;
-
-                    stream = sut.SendMessage(new Metadata
-                    {
-                        { "TraceId", Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString() },
-                        { "clientId", Guid.NewGuid().ToString() }
-                    });
-
-                    Thread.Sleep(1000);
-
-                    botsMessage.Add(bot.Id, message3);
-                    await stream.RequestStream.WriteAsync(new SendMessageRequest
-                    {
-                        BotId = bot.Id,
-                        Message = message3
-                    }, CancellationToken.None);
-
-                    Thread.Sleep(2000);
-
-                    try
-                    {
-                        while (await stream.ResponseStream.MoveNext(token))
-                        {
-                            var response = stream.ResponseStream.Current;
-                            responses.Add(response);
-                            break;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        responses.Add(Error.Failure(ex.Message));
-                    }
-
-                    await stream.RequestStream.CompleteAsync();
-                }
-                catch (Exception ex)
-                {
-                    responses.Add(Error.Failure(ex.Message));
-                }
-                
-                return responses;
+                } 
             })
             .ThenAssertAsync(responses =>
             {
                 var errors = new List<Error>();
-                
+
                 foreach (var response in responses)
                 {
                     if (response.IsError)
@@ -353,61 +328,65 @@ public class PathfinderServiceTests
                 try
                 {
                     var client = new Client(_channel);
-                    var bots = client.GetBots(new Empty()).Bots;
+                    var bots = client.GetBots(new GetBotsRequest
+                    {
+                        MapId = mapId
+                    }).Bots;
 
                     foreach (var bot in bots)
                     {
                         if (bot.Status == "Available")
                             errors.Add(Error.Unexpected("Bot is available",
-                                $"Bot with id ({bot.Id}) is still available instead of be acquired"));
+                                $"Bot ({bot.Name}) is still available instead of be acquired"));
 
-                        var message = botsMessage[bot.Id];
-
-                        var pattern = "";
-                        switch (message)
+                        if (bot.Name == botNames[0])
                         {
-                            case message1:
-                                pattern = message1;
-                                break;
-                            case message2:
-                                pattern = message2;
-                                break;
-                            case message3:
-                                pattern = message3;
-                                if (bot.Status != "Dead")
-                                {
-                                    errors.Add(Error.Unexpected("Incorrect status",
-                                        $"Bot with id ({bot.Id}) must dead, but it still alive!"));
-                                }
-                                break;
+                            CheckLocation(bot, new Vector2(1, 1), "E");
                         }
-
-                        if (bot.Position.X != botsPositions[pattern].X || bot.Position.Y != botsPositions[pattern].Y ||
-                            bot.Position.Direction != botsPositions[pattern].Direction)
+                        
+                        if (bot.Name == botNames[1])
                         {
-                            errors.Add(Error.Unexpected("Incorrect position",
-                                $"Bot with id ({bot.Id}) has incorrect position"));
+                            CheckLocation(bot, new Vector2(3, 3), "N");
+                            
+                            if (bot.Status != "Dead")
+                                errors.Add(Error.Unexpected("Bot is available",
+                                    $"Bot ({bot.Name}) is still available instead of be acquired"));
+                        }
+                        
+                        if (bot.Name == botNames[2])
+                        {
+                            CheckLocation(bot, new Vector2(2, 3), "S");
                         }
                     }
 
+                    void CheckLocation(Bot bot, Vector2 coordinates, string direction)
+                    {
+                        if (bot.Position.X != (int)coordinates.X 
+                            && bot.Position.Y != (int)coordinates.Y 
+                            && bot.Position.Direction != direction)
+                        {
+                            errors.Add(Error.Unexpected("Incorrect position",
+                                $"Bot ({bot.Name}) has incorrect position"));
+                        }
+                    }
                 }
                 finally
                 {
                     if (!errors.Any()) Assert.Pass();
-                    
+
                     if (errors.Count > 0)
                     {
                         foreach (var error in errors)
                         {
                             Console.WriteLine("{0}: {1}", error.Code, error.Description);
                         }
-                    
+
                         Assert.Fail();
                     }
                 }
             });
     }
-    
+
     [TearDown]
     public void TearDown()
     {

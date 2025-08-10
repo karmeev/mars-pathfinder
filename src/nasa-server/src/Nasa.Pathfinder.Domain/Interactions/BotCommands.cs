@@ -30,7 +30,6 @@ public record DeadCommand(
     string ClientId,
     string BotId,
     string MapId,
-    string LastWords,
     Position CurrentPosition,
     Guid CorrelationId = default) : IBotCommand;
 
