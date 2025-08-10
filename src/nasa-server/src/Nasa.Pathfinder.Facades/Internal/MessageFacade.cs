@@ -11,7 +11,6 @@ namespace Nasa.Pathfinder.Facades.Internal;
 internal class MessageFacade(
     IBotRepository repository,
     IMessageDecoderService messageDecoder,
-    IWorldMapService worldMap,
     IBotProcessor processor) : IMessageFacade
 {
     public async Task ReceiveMessageAsync(IMessage message, CancellationToken ct = default)
@@ -37,9 +36,7 @@ internal class MessageFacade(
         }
 
         var bot = await repository.TryGetAsync(operatorMessage.BotId, ct);
-
-        var desiredPosition = worldMap.CalculateDesiredPosition(bot.Position, commands);
-
-        processor.Publish(new MoveCommand(operatorMessage.ClientId, bot, desiredPosition, correlationId));
+        
+        processor.Publish(new MoveCommand(operatorMessage.ClientId, bot, commands, correlationId));
     }
 }

@@ -12,24 +12,25 @@ internal class BotConsumer(
 {
     public async Task Consume(MoveCommand command, CancellationToken ct = default)
     {
-        var project = await worldMap.TryReachPosition(command.Bot.MapId, command.DesiredPosition, ct);
+        var project = await worldMap.ReachPosition(command.Bot.MapId, command.Bot.Position, command.OperatorCommands , ct);
 
         if (project is PositionNotChanged)
         {
-            var stand = new StandCommand(command.ClientId, command.Bot.Id, command.Bot.Position, command.CorrelationId);
+            var stand = new StandCommand(command.ClientId, command.Bot.Id, project.Position,
+                command.CorrelationId);
             processor.Publish(stand);
             return;
         }
 
-        if (project is PositionOutOfMap)
+        if (project is PositionOutOfMap outOfMap)
         {
-            var lost = new DeadCommand(command.ClientId, command.Bot.Id, command.DesiredPosition, command.Bot.MapId,
-                command.Bot.LastWords, command.CorrelationId);
+            var lost = new DeadCommand(command.ClientId, command.Bot.Id, command.Bot.MapId,
+                command.Bot.LastWords, outOfMap.Previous,  command.CorrelationId);
             processor.Publish(lost);
             return;
         }
 
-        var walk = new WalkCommand(command.ClientId, command.Bot.Id, command.DesiredPosition,
+        var walk = new WalkCommand(command.ClientId, command.Bot.Id, project.Position,
             command.CorrelationId);
         processor.Publish(walk);
     }

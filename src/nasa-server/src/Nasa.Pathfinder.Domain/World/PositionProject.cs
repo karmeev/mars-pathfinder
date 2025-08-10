@@ -1,26 +1,28 @@
 namespace Nasa.Pathfinder.Domain.World;
 
 public interface IPositionProject
-{ }
+{
+    public Position Position { get; }
+}
 
-public record PositionChanged : IPositionProject;
-public record PositionNotChanged : IPositionProject;
-public record PositionOutOfMap : IPositionProject;
+public record PositionChanged(Position Position) : IPositionProject;
+public record PositionNotChanged(Position Position) : IPositionProject;
+public record PositionOutOfMap(Position Position, Position Previous) : IPositionProject;
 
 public static class PositionProject
 {
-    public static IPositionProject Changed()
+    public static IPositionProject Changed(Position position)
     {
-        return new PositionChanged();
+        return new PositionChanged(position);
     }
     
-    public static IPositionProject NotChanged()
+    public static IPositionProject NotChanged(Position position)
     {
-        return new PositionNotChanged();
+        return new PositionNotChanged(position);
     }
     
-    public static IPositionProject OutOfMap()
+    public static IPositionProject OutOfMap(Position position, Position previous)
     {
-        return new PositionOutOfMap();
+        return new PositionOutOfMap(position, previous);
     }
 }
